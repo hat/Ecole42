@@ -15,7 +15,7 @@ NAME = fillit
 SRC = main.c fillit_read.c fillit_tetromino.c fillit_solve.c \
 		ft_bzero.c ft_strsplit.c ft_putchar.c ft_putstr.c \
 		ft_strlen.c ft_memdel.c ft_memset.c ft_sqrt.c ft_putstr_fd.c \
-		ft_wordcount.c ft_wordlen.c ft_program_name.c
+		ft_wordcount.c ft_wordlen.c
 
 OBJ = $(SRC:.c=.o)
 

@@ -20,7 +20,7 @@
 static void		fillit_usage(char *argv0)
 {
 	ft_putstr("usage: ");
-	ft_putstr(ft_program_name(argv0));
+	ft_putstr(argv0);
 	ft_putstr(" [fillit_file]\n");
 }
 

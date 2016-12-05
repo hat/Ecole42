@@ -110,12 +110,12 @@ char		**fillit_create_map(int size)
 	int		row;
 	int		col;
 
-	if (!(map = (char **)malloc(sizeof(char *) * size)))
+	if (!(map = (char **)malloc(sizeof(char *) * size) + 1))
 		return (NULL);
 	row = 0;
 	while (row < size)
 	{
-		if (!(map[row] = (char *)malloc(sizeof(char) * size)))
+		if (!(map[row] = (char *)malloc(sizeof(char) * size) + 1))
 			return (NULL);
 		row += 1;
 	}
@@ -130,6 +130,7 @@ char		**fillit_create_map(int size)
 		}
 		row += 1;
 	}
+	map[row][col] == '\0';
 	return (map);
 }
 
@@ -160,6 +161,8 @@ char		**fillit_read(int fd)
 			return (NULL);
 		i += 1;
 		g_num_tets = i;
+		if (g_num_tets > 26)
+			return (NULL);
 	}
 	return (map);
 }

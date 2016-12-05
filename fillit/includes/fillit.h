@@ -90,7 +90,7 @@ void					*ft_memset(void *b, int c, size_t len);
 double					ft_sqrt(double x);
 size_t					ft_wordcount(const char *s, char c);
 size_t					ft_wordlen(const char *s, char c);
-char					*ft_program_name(char const *argv0);
+
 /*
 ** Prototypes for fillit type functions.
 */
