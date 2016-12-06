@@ -16,8 +16,6 @@
 //     void          *data;
 // }                 t_list;
 
-//THIS FAILS!!!
-
 #include "ft_list.h"
 
 void	ft_list_foreach(t_list *begin_list, void (*f)(void *))
@@ -25,9 +23,11 @@ void	ft_list_foreach(t_list *begin_list, void (*f)(void *))
 	t_list	*tmp;
 
 	tmp = begin_list;
-	while (tmp->next)
+	while (tmp)
 	{
-		(*f)(tmp->data);
+		f(tmp->data);
 		tmp = tmp->next;
-	}
+	}	
 }
+
+//PASSES
