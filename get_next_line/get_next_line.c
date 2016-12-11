@@ -1,3 +1,16 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   get_next_line.h                                    :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: thendric <marvin@42.fr>                    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2016/11/29 11:33:27 by thendric          #+#    #+#             */
+/*   Updated: 2016/12/10 13:57:24 by thendric         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+
 #include "get_next_line.h"
 #include <stdio.h>
 #include <string.h>
@@ -34,47 +47,28 @@ int 	ft_read_data(t_ext *lst, char *data)
 {
 	size_t	c_read;
 
-	printf("--Passed: %s\n", lst->line);
-	printf("--Data Passed: %s\n", data);
 	if (!(c_read = read(lst->fd, data, BUFF_SIZE)))
 		return (0);
-	printf("--Read: %s\n", lst->line);
-	printf("--Data Read: %s\n", data);
 	if (!lst->line[0])
-	{
 		if (ft_strchr(data, '\n'))
-		{
-			printf("-1\n");
 			lst->line = (ft_strncat(lst->line, data, ft_strchr(data, '\n') - data));
-		}
 		else
-		{
-			printf("0\n");
 			lst->line = ft_strcat(lst->line, data);
-		}
-	}
 	else
 	{
 		if (ft_strchr(data, '\n'))
 		{
-			printf("---1\n");
 			lst->line = ft_strrealloc(lst->line, (lst->cur_place / BUFF_SIZE) + ft_strlen(lst->leftover));
 			lst->line = (ft_strncat(lst->line, data, ft_strchr(data, '\n') - data));
 			lst->leftover = ft_strdup(data + (ft_strchr(data, '\n') - data + 1));
 		}
 		else
 		{
-			printf("---2\n");
-			printf("-%s\n", lst->line);
 			ft_strrealloc(lst->line, (lst->cur_place / BUFF_SIZE) + ft_strlen(lst->leftover));
-			printf("--%s\n", lst->line);
 			lst->line = ft_strncat(lst->line, data, c_read);
-			printf("---Post Strncat: %s\n", lst->line);
 		}
 	}
 	lst->cur_place += c_read;
-	printf("%s\n", lst->line);
-	printf("---\n");
 	if (ft_strchr(data, '\n'))
 		return (0);
 	return (1);
@@ -138,23 +132,21 @@ int		get_next_line(const int fd, char **line)
 	static t_ext	*head;
 	t_ext			*lst;
 	char			*data;
-	int				success;
+	int				ret;
 
-	success = 1;
+	ret = 1;
 	if (fd < 0 || !line || BUFF_SIZE < 1)
 		return (-1);
 	if (head == NULL)
 		head = ft_create_lst(fd);
 	lst = head;
-	line = 0;
 	lst = iterate_lst_fd(lst, fd);
 	lst->line = ft_strdup(lst->leftover);
 	data = ft_strnew(ft_strlen(lst->line + BUFF_SIZE));
-	data = ft_strdup(lst->line);
-	success = ft_read_data(lst, data);
-	while (success)
-		success = ft_read_data(lst, data);
-	line = &lst->line;
+	ret = ft_read_data(lst, data);
+	while (ret)
+		ret = ft_read_data(lst, ft_strnew(ft_strlen(lst->line + BUFF_SIZE)));
+	*line = ft_strdup(lst->line);
 	printf("Line is: %s\n", *line);
 	ft_bzero(lst->line, ft_strlen(lst->line));
 	return (0);
