@@ -12,65 +12,58 @@
 //TODO no matter what return single line. Reason for list of fd is to start again where you left off. Always returns single pointer to single line though...
 //TODO Alloc the lst->line initally, then realloc every time you need to add to it
 
-/*
-** 
-*/
 
-char	*ft_strrealloc(char *str, size_t size)
+//TODO TODO TODO make it where data is declared in g_n_l function and holds where it has
+//					already read to. Also, make sure to safe the stuff after the \n
+
+
+/*
+** Adds more memory to an already existing string
+** 
+** @param str 		the string to add memory
+** @param amount	the amount of memory to add in bytes
+**
+** @return 			the str with more memory allocated
+*/
+char	*ft_strrealloc(char *str, size_t amount)
 {
 	char	*old;
 
-	old = (char *)malloc(sizeof(char) * ft_strlen(str));
+	old = ft_strnew(ft_strlen(str));
 	ft_strcpy(old, str);
-	printf("Add %lu bytes\n", size);
-	printf("realloc old: %s\n", str);
-	free(str);
-	//FIGURE OUT HOW MUCH TO ALLOCATE
-	if (!(str = (char *)malloc(sizeof(char) * size)))
-		return (NULL);
-	size = 0;
+	str = ft_strnew(BUFF_SIZE * (amount + 1));
+	ft_bzero(str, BUFF_SIZE * (amount + 1));
 	ft_strcpy(str, old);
-	printf("realloc: %s\n", str);
+	free(old);
 	return (str);
 }
 
-int 	ft_read_data(t_ext *lst)
+
+//TODO check if end of file
+int 	ft_read_data(t_ext *lst, char *data)
 {
-	char	*data;
 	size_t	c_read;
 
-	c_read = 0;
-	data = ft_strnew(BUFF_SIZE);
-	c_read += read(lst->fd, data, BUFF_SIZE);
-	//It now exists because of malloc, need to see if it has been gone through before
+	if (!(c_read = read(lst->fd, data, BUFF_SIZE)))
+		return (0);
 	if (!lst->line[0])
-	{
-		printf("Doesn't exist!\n");
 		if (ft_strchr(data, '\n'))
 			lst->line = ft_strndup(data, ft_strchr(data, '\n') - data);
 		else
 			lst->line = ft_strndup(data, c_read);
-	}
 	else
-	{
-		printf("Exists!\n");
 		if (ft_strchr(data, '\n'))
 		{
-			ft_strrealloc(lst->line, (size_t)(ft_strchr(data, '\n') - data));
+			lst->line = ft_strrealloc(lst->line, lst->cur_place / BUFF_SIZE);
 			ft_strncpy(lst->line + lst->cur_place, data, ft_strchr(data, '\n') - data);
 		}
 		else
 		{
-			ft_strrealloc(lst->line, ft_strlen(data));
+			ft_strrealloc(lst->line, lst->cur_place / BUFF_SIZE);
 			ft_strcpy(lst->line + lst->cur_place, data);
 		}
-	}
 	lst->cur_place += c_read;
-	printf("lst->line: %s\n", lst->line);
-	if (ft_strchr(data, '\n'))
-		return (0);
-	else
-		return (1);
+	return (1);
 }
 
 /*
@@ -98,26 +91,23 @@ t_ext *ft_create_lst(int fd)
 ** @param fd 	the file descriptor ro look for
 ** @return 		new lst if doesn't exit, location of fd, or add new fd to list
 */
-int 	iterate_lst_fd(t_ext *lst, int fd)
+t_ext 	*iterate_lst_fd(t_ext *lst, int fd)
 {
 	if (!lst)
 	{
-		//printf("Create new list\n");
 		lst = ft_create_lst(fd);
-		//printf("Cur lst fd: %d\n", lst->fd);
-		//ft_read_data(lst);
-		return (0);
+		return (lst);
 	}
 	while (lst)
 	{
 		if (lst->fd == fd)
 		{
-			return (1);
+			return (lst);
 		}
 		lst = lst->next;
 	}
-	lst->next = ft_create_lst(fd);
-	return (0);
+	lst = ft_create_lst(fd);
+	return (lst);
 }
 
 /*
@@ -132,20 +122,26 @@ int		get_next_line(const int fd, char **line)
 {
 	static t_ext	*head;
 	t_ext			*lst;
+	int 			read;
+	char			*data;
 
+	read = 1;
+	data = ft_strnew(BUFF_SIZE);
+	if (fd < 0 || !line || BUFF_SIZE < 1)
+		return (-1);
+	printf("gnl fd: %i\n", fd);
 	if (head == NULL)
 		head = ft_create_lst(fd);
 	lst = head;
-
 	line = 0;
-
-	//Search through lst for fd or create new
-	iterate_lst_fd(lst, fd);
-
-	//Add the current buf size text to lst of fd
-	while (ft_read_data(lst))
-		;
-
-	//gnl_free(data);
+	lst = iterate_lst_fd(lst, fd);
+	while ((read = ft_read_data(lst, data)))
+		if (!read)
+			return (1);
+	printf("Setting line to: %s\n", lst->line);
+	line = &lst->line;
+	printf("Line is: %s\n", *line);
+	if (*line != NULL)
+		return (1);
 	return (0);
 }

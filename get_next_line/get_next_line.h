@@ -6,12 +6,12 @@
 /*   By: thendric <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/11/29 11:33:27 by thendric          #+#    #+#             */
-/*   Updated: 2016/11/29 11:33:39 by thendric         ###   ########.fr       */
+/*   Updated: 2016/12/10 13:57:24 by thendric         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef GET_NEXT_LINE
-# define GET_NEXT_LINE
+#ifndef GET_NEXT_LINE_H
+# define GET_NEXT_LINE_H
 
 # define BUFF_SIZE 12
 
@@ -26,18 +26,18 @@
 ** *line: 	text read from file
 ** *next:	pointer to the next struct
 */
-typedef struct 			s_readfile
+typedef struct			s_readfile
 {
 	int					fd;
 	char				*line;
 	size_t				cur_place;
 	struct s_readfile	*next;
 
-}               		t_ext;
+}						t_ext;
 
 /*
 ** Declare all functions
 */
-int		get_next_line(const int fd, char **line);
+int						get_next_line(const int fd, char **line);
 
 #endif
