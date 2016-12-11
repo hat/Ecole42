@@ -30,6 +30,7 @@ typedef struct			s_readfile
 {
 	int					fd;
 	char				*line;
+	char				*leftover;
 	size_t				cur_place;
 	struct s_readfile	*next;
 
