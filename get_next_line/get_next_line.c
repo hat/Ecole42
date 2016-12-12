@@ -45,10 +45,12 @@ char	*ft_strrealloc(char *str, size_t amount)
 //TODO check if end of file
 int 	ft_read_data(t_ext *lst, char *data)
 {
-	size_t	c_read;
+	long long	c_read;
 
 	if (!(c_read = read(lst->fd, data, BUFF_SIZE)))
 		return (0);
+	if (c_read == -1)
+		return (-1);
 	if (!lst->line[0])
 		if (ft_strchr(data, '\n'))
 		{
@@ -150,10 +152,12 @@ int		get_next_line(const int fd, char **line)
 	lst->line = ft_strdup(lst->leftover);
 	data = ft_strnew(ft_strlen(lst->line + BUFF_SIZE));
 	ret = ft_read_data(lst, data);
-	while (ret)
+	while (ret && ret != -1)
 		ret = ft_read_data(lst, ft_strnew(ft_strlen(lst->line + BUFF_SIZE)));
 	*line = ft_strdup(lst->line);
 	ft_bzero(lst->line, ft_strlen(lst->line));
+	if (ret == -1)
+		return (-1);
 	if (!(*data))
 		return (0);
 	return (1);
