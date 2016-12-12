@@ -51,9 +51,14 @@ int 	ft_read_data(t_ext *lst, char *data)
 		return (0);
 	if (!lst->line[0])
 		if (ft_strchr(data, '\n'))
+		{
 			lst->line = (ft_strncat(lst->line, data, ft_strchr(data, '\n') - data));
+			lst->leftover = ft_strdup(data + (ft_strchr(data, '\n') - data + 1));
+		}
 		else
+		{
 			lst->line = ft_strcat(lst->line, data);
+		}
 	else
 	{
 		if (ft_strchr(data, '\n'))
@@ -66,6 +71,7 @@ int 	ft_read_data(t_ext *lst, char *data)
 		{
 			ft_strrealloc(lst->line, (lst->cur_place / BUFF_SIZE) + ft_strlen(lst->leftover));
 			lst->line = ft_strncat(lst->line, data, c_read);
+			ft_bzero(lst->leftover, ft_strlen(lst->leftover));
 		}
 	}
 	lst->cur_place += c_read;
@@ -147,7 +153,8 @@ int		get_next_line(const int fd, char **line)
 	while (ret)
 		ret = ft_read_data(lst, ft_strnew(ft_strlen(lst->line + BUFF_SIZE)));
 	*line = ft_strdup(lst->line);
-	printf("Line is: %s\n", *line);
 	ft_bzero(lst->line, ft_strlen(lst->line));
-	return (0);
+	if (!(*data))
+		return (0);
+	return (1);
 }
