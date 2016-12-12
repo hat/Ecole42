@@ -47,6 +47,7 @@ int 	ft_read_data(t_ext *lst, char *data)
 {
 	long long	c_read;
 
+	// HOW TO CHECK CURRENT ERROR -> -> ft_strchr(lst->leftover, '\n'))
 	if (!(c_read = read(lst->fd, data, BUFF_SIZE)))
 		return (0);
 	if (c_read == -1)
@@ -149,6 +150,14 @@ int		get_next_line(const int fd, char **line)
 		head = ft_create_lst(fd);
 	lst = head;
 	lst = iterate_lst_fd(lst, fd);
+	//Code for newline leftover Prob shouldn't return -1
+	if (ft_strchr(lst->leftover, '\n'))
+	{
+		lst->line = ft_strndup(lst->leftover, ft_strlen(lst->leftover) - ft_strlen(ft_strchr(lst->leftover, '\n')));
+		*line = ft_strdup(lst->line);
+		lst->leftover = ft_strdup(lst->leftover + (ft_strchr(lst->leftover, '\n') - lst->leftover + 1));
+		return (1);
+	}
 	lst->line = ft_strdup(lst->leftover);
 	data = ft_strnew(ft_strlen(lst->line + BUFF_SIZE));
 	ret = ft_read_data(lst, data);
