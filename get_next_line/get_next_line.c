@@ -159,10 +159,10 @@ int		get_next_line(const int fd, char **line)
 		return (1);
 	}
 	lst->line = ft_strdup(lst->leftover);
-	data = ft_strnew(ft_strlen(lst->line + BUFF_SIZE));
+	data = ft_strnew(ft_strlen(lst->line) + BUFF_SIZE);
 	ret = ft_read_data(lst, data);
 	while (ret && ret != -1)
-		ret = ft_read_data(lst, ft_strnew(ft_strlen(lst->line + BUFF_SIZE)));
+		ret = ft_read_data(lst, ft_strnew(ft_strlen(lst->line) + BUFF_SIZE));
 	*line = ft_strdup(lst->line);
 	ft_bzero(lst->line, ft_strlen(lst->line));
 	if (ret == -1)
