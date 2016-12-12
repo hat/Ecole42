@@ -60,7 +60,7 @@ int 	ft_read_data(t_ext *lst, char *data)
 		}
 		else
 		{
-			lst->line = ft_strcat(lst->line, data);
+			lst->line = ft_strdup(data);
 		}
 	else
 	{
