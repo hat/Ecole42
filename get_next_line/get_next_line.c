@@ -12,13 +12,8 @@
 
 
 #include "get_next_line.h"
-#include <stdio.h>
+//#include <stdio.h>
 #include <string.h>
-
-//TODO TODO still getting garbage values sometimes
-//TODO Return line set to the lst-line
-//TODO have function return correct 0 1 or -1
-//TODO make ft_gead_data 25 lines
 
 /*
 ** Adds more memory to an already existing string
@@ -36,23 +31,27 @@ char	*ft_strrealloc(char *str, size_t amount)
 	ft_strcpy(old, str);
 	str = ft_strnew(BUFF_SIZE * (amount + 1));
 	ft_bzero(str, BUFF_SIZE * (amount + 1));
-	ft_strcpy(str, old);
+	ft_strncpy(str, old, BUFF_SIZE * (amount + 1) + 1);
 	free(old);
 	return (str);
 }
 
-
-//TODO check if end of file
+/*
+**
+**
+**
+**
+*/
 int 	ft_read_data(t_ext *lst, char *data)
 {
 	long long	c_read;
 
-	// HOW TO CHECK CURRENT ERROR -> -> ft_strchr(lst->leftover, '\n'))
 	if (!(c_read = read(lst->fd, data, BUFF_SIZE)))
 		return (0);
 	if (c_read == -1)
 		return (-1);
 	if (!lst->line[0])
+	{
 		if (ft_strchr(data, '\n'))
 		{
 			lst->line = (ft_strncat(lst->line, data, ft_strchr(data, '\n') - data));
@@ -62,6 +61,7 @@ int 	ft_read_data(t_ext *lst, char *data)
 		{
 			lst->line = ft_strdup(data);
 		}
+	}
 	else
 	{
 		if (ft_strchr(data, '\n'))
@@ -72,15 +72,12 @@ int 	ft_read_data(t_ext *lst, char *data)
 		}
 		else
 		{
-			ft_strrealloc(lst->line, (lst->cur_place / BUFF_SIZE) + ft_strlen(lst->leftover));
+			lst->line = ft_strrealloc(lst->line, (lst->cur_place / BUFF_SIZE) + ft_strlen(lst->leftover));
 			lst->line = ft_strncat(lst->line, data, c_read);
-			ft_bzero(lst->leftover, ft_strlen(lst->leftover));
-		}
+			ft_bzero(lst->leftover, ft_strlen(lst->leftover));		}
 	}
 	lst->cur_place += c_read;
-	if (ft_strchr(data, '\n'))
-		return (0);
-	return (1);
+	return (c_read);
 }
 
 /*
@@ -94,7 +91,7 @@ t_ext *ft_create_lst(int fd)
 
 	new = (t_ext *)malloc(sizeof(t_ext));
 	new->fd = fd;
-	new->line = ft_strnew(BUFF_SIZE);//(char *)malloc(sizeof(char) * BUFF_SIZE);
+	new->line = ft_strnew(BUFF_SIZE);
 	new->leftover = ft_strnew(BUFF_SIZE);
 	ft_bzero(new->line, BUFF_SIZE);
 	new->cur_place = 0;
@@ -136,6 +133,10 @@ t_ext 	*iterate_lst_fd(t_ext *lst, int fd)
 ** @param  line the pointer to a char in which to store the line read
 ** @return      1 if success, 0 when completed, -1 if error
 */
+
+// SET DATA TO LEFTOVER
+// CHECK IF DATA HAS NEWLINE BEFORE WHILE LOOP
+
 int		get_next_line(const int fd, char **line)
 {
 	static t_ext	*head;
@@ -150,24 +151,21 @@ int		get_next_line(const int fd, char **line)
 		head = ft_create_lst(fd);
 	lst = head;
 	lst = iterate_lst_fd(lst, fd);
-	//Code for newline leftover Prob shouldn't return -1
-	if (ft_strchr(lst->leftover, '\n'))
-	{
-		lst->line = ft_strndup(lst->leftover, ft_strlen(lst->leftover) - ft_strlen(ft_strchr(lst->leftover, '\n')));
-		*line = ft_strdup(lst->line);
-		lst->leftover = ft_strdup(lst->leftover + (ft_strchr(lst->leftover, '\n') - lst->leftover + 1));
-		return (1);
-	}
 	lst->line = ft_strdup(lst->leftover);
 	data = ft_strnew(ft_strlen(lst->line) + BUFF_SIZE);
-	ret = ft_read_data(lst, data);
-	while (ret && ret != -1)
-		ret = ft_read_data(lst, ft_strnew(ft_strlen(lst->line) + BUFF_SIZE));
+	while ((!(ft_strchr(data, '\n'))) && (ret) && (ret != -1))
+	{
+		data = ft_strnew(ft_strlen(lst->line) + BUFF_SIZE);
+		ret = ft_read_data(lst, data);
+	}
 	*line = ft_strdup(lst->line);
 	ft_bzero(lst->line, ft_strlen(lst->line));
+	ft_bzero(data, ft_strlen(data));
+	//CHECK IF BUFF_SIZE is 1 how to know if EOF
+	//THIS IS THE ISSUE!!!
 	if (ret == -1)
 		return (-1);
-	if (!(*data))
+	if (!(*lst->leftover && !(*data)))
 		return (0);
 	return (1);
 }
