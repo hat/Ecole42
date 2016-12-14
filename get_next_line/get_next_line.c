@@ -12,8 +12,10 @@
 
 
 #include "get_next_line.h"
-//#include <stdio.h>
+#include <stdio.h>
 #include <string.h>
+
+//TODO still check if newline in leftover
 
 /*
 ** Adds more memory to an already existing string
@@ -153,19 +155,21 @@ int		get_next_line(const int fd, char **line)
 	lst = iterate_lst_fd(lst, fd);
 	lst->line = ft_strdup(lst->leftover);
 	data = ft_strnew(ft_strlen(lst->line) + BUFF_SIZE);
-	while ((!(ft_strchr(data, '\n'))) && (ret) && (ret != -1))
+	while ((!(ft_strchr(data, '\n'))) && (ret) && (ret != -1) && !(ft_strchr(lst->line, '\n')))
 	{
 		data = ft_strnew(ft_strlen(lst->line) + BUFF_SIZE);
 		ret = ft_read_data(lst, data);
 	}
+	if (ft_strchr(lst->leftover, '\n') && ret < BUFF_SIZE)
+	{
+		lst->line = ft_strndup(lst->leftover, ft_strchr(lst->leftover, '\n') - lst->leftover);
+		lst->leftover = ft_strdup(lst->leftover + (ft_strchr(lst->leftover, '\n') - lst->leftover + 1));
+		ret = 1;
+	}
 	*line = ft_strdup(lst->line);
 	ft_bzero(lst->line, ft_strlen(lst->line));
 	ft_bzero(data, ft_strlen(data));
-	//CHECK IF BUFF_SIZE is 1 how to know if EOF
-	//THIS IS THE ISSUE!!!
-	if (ret == -1)
-		return (-1);
-	if (!(*lst->leftover && !(*data)))
-		return (0);
-	return (1);
+	if (ft_strchr(lst->leftover, '\n'))
+		ret = 1;
+	return (ret);
 }
