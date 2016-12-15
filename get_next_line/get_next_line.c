@@ -14,8 +14,6 @@
 #include "get_next_line.h"
 #include <stdio.h>
 
-//TODO still check if newline in leftover
-
 /*
 ** Adds more memory to an already existing string
 ** 
@@ -28,7 +26,6 @@ char	*ft_strrealloc(char *str, size_t amount)
 {
 	char	*old;
 
-	//printf("Strlen is: %zu Amount is: %zu\n", ft_strlen(str), amount);
 	old = ft_strnew(ft_strlen(str));
 	ft_strcpy(old, str);
 	str = ft_strnew(BUFF_SIZE * (amount + 1));
@@ -156,7 +153,7 @@ int		get_next_line(const int fd, char **line)
 	lst = iterate_lst_fd(lst, fd);
 	lst->line = ft_strdup(lst->leftover);
 	data = ft_strnew(ft_strlen(lst->line) + BUFF_SIZE);
-	while ((!(ft_strchr(data, '\n'))) && (ret) && (ret != -1) && !(ft_strchr(lst->line, '\n')))
+	while ((!(ft_strchr(data, '\n'))) && !(ft_strchr(lst->line, '\n')) && (ret) && (ret != -1))
 	{
 		data = ft_strnew(ft_strlen(lst->line) + BUFF_SIZE);
 		ret = ft_read_data(lst, data);
