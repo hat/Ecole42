@@ -13,7 +13,6 @@
 
 #include "get_next_line.h"
 #include <stdio.h>
-#include <string.h>
 
 //TODO still check if newline in leftover
 
@@ -29,6 +28,7 @@ char	*ft_strrealloc(char *str, size_t amount)
 {
 	char	*old;
 
+	//printf("Strlen is: %zu Amount is: %zu\n", ft_strlen(str), amount);
 	old = ft_strnew(ft_strlen(str));
 	ft_strcpy(old, str);
 	str = ft_strnew(BUFF_SIZE * (amount + 1));
@@ -68,13 +68,13 @@ int 	ft_read_data(t_ext *lst, char *data)
 	{
 		if (ft_strchr(data, '\n'))
 		{
-			lst->line = ft_strrealloc(lst->line, (lst->cur_place / BUFF_SIZE) + ft_strlen(lst->leftover));
+			lst->line = ft_strrealloc(lst->line, (lst->cur_place / BUFF_SIZE));
 			lst->line = (ft_strncat(lst->line, data, ft_strchr(data, '\n') - data));
 			lst->leftover = ft_strdup(data + (ft_strchr(data, '\n') - data + 1));
 		}
 		else
 		{
-			lst->line = ft_strrealloc(lst->line, (lst->cur_place / BUFF_SIZE) + ft_strlen(lst->leftover));
+			lst->line = ft_strrealloc(lst->line, (lst->cur_place / BUFF_SIZE));
 			lst->line = ft_strncat(lst->line, data, c_read);
 			ft_bzero(lst->leftover, ft_strlen(lst->leftover));		}
 	}
@@ -117,6 +117,7 @@ t_ext 	*iterate_lst_fd(t_ext *lst, int fd)
 	}
 	while (lst)
 	{
+		lst->cur_place = 0;
 		if (lst->fd == fd)
 		{
 			return (lst);
