@@ -1,30 +1,31 @@
 #include "get_next_line.h"
 #include <stdio.h>
 
-//TODO IN MAIN FUNCTION CHECK IF NEED TO READ OR GRAB FROM LEFTOVER ETC...
-//TODO CHECK REALLOC AND MAKE SURE TO SAVE BUFFER AFTER NEWLINE
+//TODO Need case for two newlines in middle of file?
 
 /*
 **
 **
 **
 */
-char	*ft_realloc(char *str, size_t amount)
+//TODO also add size of lst->content to realloc
+char	*ft_realloc(t_list *lst, char *str, size_t amount)
 {
 	char	*new;
 
 	if (str[0])
 	{
-		new = ft_strnew(BUFF_SIZE * (amount + 1));
+		new = ft_strnew(BUFF_SIZE * (amount + 1) + ft_strlen(lst->content));
 		ft_strncpy(new, str, BUFF_SIZE * (amount + 1));
 		ft_bzero(str, ft_strlen(str));
 	}
 	else
 	{
-		new = ft_strnew(BUFF_SIZE * (amount + 1));
+		new = ft_strnew(BUFF_SIZE * (amount + 1) + ft_strlen(lst->content));
 		ft_bzero(new, BUFF_SIZE * (amount + 1));
 	}
 	free(str);
+	//printf("Allocated to size: %zu\n", BUFF_SIZE * (amount + 1) + ft_strlen(lst->content));
 	return (new);
 }
 
@@ -63,24 +64,21 @@ ssize_t		ft_read_line(t_list *lst, char **line)
 	ssize_t	b_read;
 
 	b_read = 1;
-	//printf("Lst->content: %s\n", lst->content);
 	if (!lst->content)
 	{
-		//printf("We returning...\n");
 		*line = NULL;
 		return (0);
 	}
 	else
 	{
 		if (*line)
-			*line = ft_realloc(*line, (ft_strlen(*line) / BUFF_SIZE));
+			*line = ft_realloc(lst, *line, (ft_strlen(*line) / BUFF_SIZE));
 		else
-			*line = ft_realloc(lst->content, (ft_strlen(lst->content) / BUFF_SIZE));
+			*line = ft_realloc(lst, lst->content, (ft_strlen(lst->content) / BUFF_SIZE));
 		if (ft_strchr(*line, '\n'))
 				return (0);
 		if (!(ft_strchr(lst->content, '\n')))
 		{
-			//printf("Run read\n");
 			lst->content = ft_strnew(BUFF_SIZE);
 			b_read = read(lst->content_size, lst->content, BUFF_SIZE);
 			if (b_read == -1)
@@ -138,7 +136,6 @@ int		get_next_line(const int fd, char **line)
 		*line = NULL;
 	while (ret && ret != -1)
 	{
-		//printf("Run this!\n");
 		ret = ft_read_line(lst, line);
 	}
 	if (*line && ft_strchr(*line, '\n'))
