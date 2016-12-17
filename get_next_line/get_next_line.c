@@ -24,6 +24,7 @@ char	*ft_realloc(char *str, size_t amount)
 		new = ft_strnew(BUFF_SIZE * (amount + 1));
 		ft_bzero(new, BUFF_SIZE * (amount + 1));
 	}
+	free(str);
 	return (new);
 }
 
@@ -34,6 +35,7 @@ char	*ft_realloc(char *str, size_t amount)
 */
 t_list	*iterate_lst_fd(t_list *lst, int fd)
 {
+	//printf("Lst->content: %s\n", lst->content);
 	if (lst->content_size == (size_t)fd)
 	{
 		return (lst);
@@ -47,6 +49,7 @@ t_list	*iterate_lst_fd(t_list *lst, int fd)
 		lst = lst->next;
 	}
 	lst = ft_lstnew(ft_strnew(BUFF_SIZE), (size_t)fd);
+	lst->content = ft_strnew(BUFF_SIZE);
 	return (lst);
 }
 
@@ -59,42 +62,41 @@ ssize_t		ft_read_line(t_list *lst, char **line)
 {
 	ssize_t	b_read;
 
-	//printf("\nSTART ft_read_line\n");
 	b_read = 1;
+	//printf("Lst->content: %s\n", lst->content);
 	if (!lst->content)
 	{
-		//printf("Null returning 0\n");
+		//printf("We returning...\n");
 		*line = NULL;
 		return (0);
 	}
 	else
 	{
-		*line = ft_realloc(lst->content, (ft_strlen(lst->content) / BUFF_SIZE));
-		//printf("Line before read: %s\n", *line);
+		if (*line)
+			*line = ft_realloc(*line, (ft_strlen(*line) / BUFF_SIZE));
+		else
+			*line = ft_realloc(lst->content, (ft_strlen(lst->content) / BUFF_SIZE));
 		if (ft_strchr(*line, '\n'))
 				return (0);
 		if (!(ft_strchr(lst->content, '\n')))
+		{
+			//printf("Run read\n");
+			lst->content = ft_strnew(BUFF_SIZE);
 			b_read = read(lst->content_size, lst->content, BUFF_SIZE);
-				if (b_read == -1)
-					return (-1);
-					else
-						//printf("Read: %s\n", lst->content);
+			if (b_read == -1)
+				return (-1);
+		}
 		if (ft_strchr(lst->content, '\n'))
 		{
-			//printf("1\n");
 			*line = (ft_strncat(*line, lst->content, ft_strchr(lst->content, '\n') - (char *)lst->content));
 			lst->content = ft_strdup(lst->content + (ft_strchr(lst->content, '\n') - (char *)lst->content) + 1);
-			//printf("1 Line: %s Content: %s\n", *line, lst->content);
 			return (0);
 		}
 		else
 		{
-			//printf("Else...\n");
 			if (b_read)
 			{
-				//printf("2\n");
-				*line = ft_strcat(*line, lst->content);//(ft_strdup(lst->content));
-				//printf("Line is: %s\n", *line);
+				*line = ft_strcat(*line, lst->content);
 				if (b_read < BUFF_SIZE)
 				{
 					lst->content = NULL;
@@ -103,7 +105,6 @@ ssize_t		ft_read_line(t_list *lst, char **line)
 			}
 			else
 			{
-				//printf("3\n");
 				lst->content = NULL;
 				return (0);
 			}
@@ -123,16 +124,21 @@ int		get_next_line(const int fd, char **line)
 	t_list			*lst;
 	int				ret;
 
-	//printf("We're here, bitch!\n");
 	ret = 1;
 	if (fd < 0 || !line || BUFF_SIZE < 1)
 		return (-1);
 	if (!head)
 		head = ft_lstnew(ft_strnew(BUFF_SIZE), (size_t)fd);
+	if (fd == 0)
+		head->content = ft_strnew(BUFF_SIZE);
 	lst = head;
 	lst = iterate_lst_fd(lst, fd);
+	//For the 1 buff case
+	if (*line)
+		*line = NULL;
 	while (ret && ret != -1)
 	{
+		//printf("Run this!\n");
 		ret = ft_read_line(lst, line);
 	}
 	if (*line && ft_strchr(*line, '\n'))
@@ -140,11 +146,7 @@ int		get_next_line(const int fd, char **line)
 		lst->content = ft_strdup(ft_strchr(*line, '\n') + 1);
 		*line = (ft_strndup(*line, ft_strchr(*line, '\n') - *line));
 	}
-	//printf("Line is: %s\n", *line);
-	//printf("Leftover is: %s\n", lst->content);
 	if (*line && ft_strlen(*line) && ret != -1)
-	{
 		return (1);
-	}
 	return (ret);
 }
