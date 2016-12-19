@@ -11,6 +11,7 @@
 /* ************************************************************************** */
 
 #include "get_next_line.h"
+#include <stdio.h>
 
 /*
 ** ft_mem reallocates memory for a string
@@ -28,16 +29,16 @@ char		*ft_mem(t_list *lst, char *str, size_t amount)
 	size_t	buff_size;
 
 	buff_size = BUFF_SIZE;
-	if (str[0])
+	if (str)
 	{
 		new = ft_strnew(buff_size * (amount + 1) + ft_strlen(lst->content));
 		ft_strncpy(new, str, buff_size * (amount + 1));
-		ft_bzero(str, ft_strlen(str));
+		ft_bzero(str, sizeof(str));
 	}
 	else
 	{
 		new = ft_strnew(buff_size * (amount + 1) + ft_strlen(lst->content));
-		ft_bzero(new, buff_size * (amount + 1));
+		ft_bzero(new, sizeof(new));
 	}
 	free(str);
 	return (new);
@@ -54,19 +55,14 @@ char		*ft_mem(t_list *lst, char *str, size_t amount)
 
 t_list		*iterate_lst_fd(t_list *lst, int fd)
 {
-	if (lst->content_size == (size_t)fd)
-		return (lst);
 	while (lst)
 	{
 		if (lst->content_size == (size_t)fd)
 			return (lst);
 		if (lst->next == NULL)
 		{
-			lst->next = ft_lstnew(ft_strnew(BUFF_SIZE), (size_t)fd);
-			lst = lst->next;
-			lst->content = ft_strnew(BUFF_SIZE);
-			ft_bzero(lst->content, ft_strlen(lst->content));
-			return (lst);
+			lst->next = ft_lstnew("\0", 1);
+			lst->next->content_size = fd;
 		}
 		lst = lst->next;
 	}
@@ -87,8 +83,8 @@ ssize_t		f_norm(t_list *lst, char **line, ssize_t b_read)
 {
 	if (ft_strchr(lst->content, '\n'))
 	{
-		*line = (ft_strncat(*line, lst->content, ft_strchr(lst->content, '\n')
-			- (char *)lst->content));
+		*line = (ft_strncat(*line, lst->content,
+			ft_strchr(lst->content, '\n') - (char *)lst->content));
 		return (0);
 	}
 	if (b_read)
@@ -124,17 +120,18 @@ ssize_t		ft_read_line(t_list *lst, char **line)
 	i = 1;
 	if (!lst->content &&
 		!(i = read(lst->content_size, lst->content, BUFF_SIZE)))
-	{
-		*line = NULL;
 		return (0);
-	}
-	if (*line && BUFF_SIZE > 0)
+	if (*line && BUFF_SIZE)
+	{
+		printf("HERE!\n");
 		*line = ft_mem(lst, *line, (ft_strlen(*line) / BUFF_SIZE));
-	else if (BUFF_SIZE > 0)
+	}
+	else if (BUFF_SIZE)
 		*line = ft_mem(lst, lst->content, ft_strlen(lst->content) / BUFF_SIZE);
 	if (ft_strchr(*line, '\n'))
-		*line = ft_strdup(*line + (ft_strchr(*line, '\n') - *line) + 1);
-	if (!(ft_strchr(lst->content, '\n')))
+		ft_memcpy(*line, *line + (ft_strchr(*line, '\n') - *line) + 1,
+			ft_strlen(*line));
+	if (!(ft_strchr(lst->content, '\n')) && !(ft_strchr(*line, '\n')))
 	{
 		lst->content = ft_strnew(BUFF_SIZE);
 		i = read(lst->content_size, lst->content, BUFF_SIZE);
@@ -165,17 +162,15 @@ int			get_next_line(const int fd, char **line)
 	if (fd < 0 || !line || BUFF_SIZE < 1)
 		return (-1);
 	if (!head)
-		head = ft_lstnew(ft_strnew(BUFF_SIZE), (size_t)fd);
-	if (fd == 0)
-		head->content = ft_strnew(BUFF_SIZE);
-	lst = head;
-	lst = iterate_lst_fd(lst, fd);
+		head = ft_lstnew("\0", 1);
+	lst = iterate_lst_fd(head, fd);
 	if (*line)
 		*line = NULL;
-	while (ret && ret != -1 && ret != -2)
-		ret = ft_read_line(lst, line);
+	while (ret > 0)
+			ret = ft_read_line(lst, line);
 	if (*line && ft_strchr(*line, '\n'))
 	{
+		printf("<><>%s\n", *line);
 		lst->content = ft_strdup(ft_strchr(*line, '\n') + 1);
 		*line = (ft_strndup(*line, ft_strchr(*line, '\n') - *line));
 	}
