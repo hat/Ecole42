@@ -12,26 +12,47 @@
 
 #include "get_next_line.h"
 
-char	*ft_realloc(t_list *lst, char *str, size_t amount)
+/*
+** ft_mem reallocates memory for a string
+**
+** @param lst a list which stores content that may need to be copied
+** @param str the string to allocate memory
+** @param amount the amount to allocate in string
+**
+** @return the newly allocated string
+*/
+
+char		*ft_mem(t_list *lst, char *str, size_t amount)
 {
 	char	*new;
+	size_t	buff_size;
 
+	buff_size = BUFF_SIZE;
 	if (str[0])
 	{
-		new = ft_strnew(BUFF_SIZE * (amount + 1) + ft_strlen(lst->content));
-		ft_strncpy(new, str, BUFF_SIZE * (amount + 1));
+		new = ft_strnew(buff_size * (amount + 1) + ft_strlen(lst->content));
+		ft_strncpy(new, str, buff_size * (amount + 1));
 		ft_bzero(str, ft_strlen(str));
 	}
 	else
 	{
-		new = ft_strnew(BUFF_SIZE * (amount + 1) + ft_strlen(lst->content));
-		ft_bzero(new, BUFF_SIZE * (amount + 1));
+		new = ft_strnew(buff_size * (amount + 1) + ft_strlen(lst->content));
+		ft_bzero(new, buff_size * (amount + 1));
 	}
 	free(str);
 	return (new);
 }
 
-t_list	*iterate_lst_fd(t_list *lst, int fd)
+/*
+** iterate_lst_fd searches through list to create or find lst with fd
+**
+** @param lst a list holding all the file descriptors and content
+** @param fd the file descriptor to search for or create
+**
+** @return the place in the list with the correct file descriptor
+*/
+
+t_list		*iterate_lst_fd(t_list *lst, int fd)
 {
 	if (lst->content_size == (size_t)fd)
 		return (lst);
@@ -51,6 +72,16 @@ t_list	*iterate_lst_fd(t_list *lst, int fd)
 	}
 	return (lst);
 }
+
+/*
+** f_norm checks if t_list content has newline and if data was read
+**
+** @param lst a lst which stores content read
+** @param line where to store the line being returned
+** @param b_read the amount of bytes read
+**
+** @return 0 if end of line otherwise 1
+*/
 
 ssize_t		f_norm(t_list *lst, char **line, ssize_t b_read)
 {
@@ -77,35 +108,54 @@ ssize_t		f_norm(t_list *lst, char **line, ssize_t b_read)
 	return (1);
 }
 
+/*
+** ft_read_line allocated memory to line and checks for end of line
+**
+** @param lst a lst which stores content that may need to be copied
+** @param line where to store the line being returned
+**
+** @return 0 end of line 1 not end of line -1 error reading -2 \n in content
+*/
+
 ssize_t		ft_read_line(t_list *lst, char **line)
 {
-	ssize_t	b_read;
+	ssize_t	i;
 
-	b_read = 1;
-	if (!lst->content && !(b_read = read(lst->content_size, lst->content, BUFF_SIZE)))
+	i = 1;
+	if (!lst->content &&
+		!(i = read(lst->content_size, lst->content, BUFF_SIZE)))
 	{
 		*line = NULL;
 		return (0);
 	}
 	if (*line)
-		*line = ft_realloc(lst, *line, (ft_strlen(*line) / BUFF_SIZE));
+		*line = ft_mem(lst, *line, (ft_strlen(*line) / BUFF_SIZE));
 	else
-		*line = ft_realloc(lst, lst->content, (ft_strlen(lst->content) / BUFF_SIZE));
+		*line = ft_mem(lst, lst->content, ft_strlen(lst->content) / BUFF_SIZE);
 	if (ft_strchr(*line, '\n'))
 		*line = ft_strdup(*line + (ft_strchr(*line, '\n') - *line) + 1);
 	if (!(ft_strchr(lst->content, '\n')))
 	{
 		lst->content = ft_strnew(BUFF_SIZE);
-		b_read = read(lst->content_size, lst->content, BUFF_SIZE);
-		if (b_read == -1)
+		i = read(lst->content_size, lst->content, BUFF_SIZE);
+		if (i == -1)
 			return (-1);
 	}
-	if (!f_norm(lst, line, b_read))
+	if (!f_norm(lst, line, i))
 		return (lst->content) ? -2 : 0;
 	return (ft_strlen(*line));
 }
 
-int		get_next_line(const int fd, char **line)
+/*
+** get_next_line gets the next line of a file and stores it in line
+**
+** @param fd the file descriptor to read from
+** @param line where to store the line being returned
+**
+** @return 0 end of line 1 not end of line -1 error reading -2 \n in content
+*/
+
+int			get_next_line(const int fd, char **line)
 {
 	static t_list	*head;
 	t_list			*lst;
