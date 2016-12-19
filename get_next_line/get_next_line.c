@@ -11,7 +11,6 @@
 /* ************************************************************************** */
 
 #include "get_next_line.h"
-#include <stdio.h>
 
 /*
 ** ft_mem reallocates memory for a string
@@ -50,23 +49,31 @@ char		*ft_mem(t_list *lst, char *str, size_t amount)
 ** @param lst a list holding all the file descriptors and content
 ** @param fd the file descriptor to search for or create
 **
-** @return the place in the list with the correct file descriptor
+** @return list location of correct file descriptor or new list
 */
 
-t_list		*iterate_lst_fd(t_list *lst, int fd)
+t_list		*iterate_lst_fd(t_list **lst, int fd)
 {
-	while (lst)
+	t_list *node;
+
+	if (!(*lst))
 	{
-		if (lst->content_size == (size_t)fd)
-			return (lst);
-		if (lst->next == NULL)
-		{
-			lst->next = ft_lstnew("\0", 1);
-			lst->next->content_size = fd;
-		}
-		lst = lst->next;
+		*lst = ft_lstnew("\0", 1);
+		(*lst)->content_size = fd;
 	}
-	return (lst);
+	node = *lst;
+	while (node)
+	{
+		if (node->content_size == (size_t)fd)
+			return (node);
+		if (node->next == NULL)
+		{
+			node->next = ft_lstnew("\0", 1);
+			node->next->content_size = fd;
+		}
+		node = node->next;
+	}
+	return (node);
 }
 
 /*
@@ -81,10 +88,15 @@ t_list		*iterate_lst_fd(t_list *lst, int fd)
 
 ssize_t		f_norm(t_list *lst, char **line, ssize_t b_read)
 {
+	char	*tmp;
+
 	if (ft_strchr(lst->content, '\n'))
 	{
 		*line = (ft_strncat(*line, lst->content,
 			ft_strchr(lst->content, '\n') - (char *)lst->content));
+		tmp = lst->content;
+		lst->content = ft_strdup(ft_strchr(lst->content, '\n') + 1);
+		free(tmp);
 		return (0);
 	}
 	if (b_read)
@@ -97,11 +109,8 @@ ssize_t		f_norm(t_list *lst, char **line, ssize_t b_read)
 		}
 	}
 	else
-	{
 		lst->content = NULL;
-		return (0);
-	}
-	return (1);
+	return ((lst->content) ? 1 : 0);
 }
 
 /*
@@ -122,15 +131,9 @@ ssize_t		ft_read_line(t_list *lst, char **line)
 		!(i = read(lst->content_size, lst->content, BUFF_SIZE)))
 		return (0);
 	if (*line && BUFF_SIZE)
-	{
-		printf("HERE!\n");
 		*line = ft_mem(lst, *line, (ft_strlen(*line) / BUFF_SIZE));
-	}
 	else if (BUFF_SIZE)
 		*line = ft_mem(lst, lst->content, ft_strlen(lst->content) / BUFF_SIZE);
-	if (ft_strchr(*line, '\n'))
-		ft_memcpy(*line, *line + (ft_strchr(*line, '\n') - *line) + 1,
-			ft_strlen(*line));
 	if (!(ft_strchr(lst->content, '\n')) && !(ft_strchr(*line, '\n')))
 	{
 		lst->content = ft_strnew(BUFF_SIZE);
@@ -139,7 +142,7 @@ ssize_t		ft_read_line(t_list *lst, char **line)
 			return (-1);
 	}
 	if (!f_norm(lst, line, i))
-		return (lst->content) ? -2 : 0;
+		return (0);
 	return (ft_strlen(*line));
 }
 
@@ -149,32 +152,34 @@ ssize_t		ft_read_line(t_list *lst, char **line)
 ** @param fd the file descriptor to read from
 ** @param line where to store the line being returned
 **
-** @return 0 end of line 1 not end of line -1 error reading -2 \n in content
+** @return 0 end of line 1 not end of line -1 error reading
 */
 
 int			get_next_line(const int fd, char **line)
 {
 	static t_list	*head;
 	t_list			*lst;
+	char			*tmp;
 	int				ret;
 
 	ret = 1;
 	if (fd < 0 || !line || BUFF_SIZE < 1)
 		return (-1);
-	if (!head)
-		head = ft_lstnew("\0", 1);
-	lst = iterate_lst_fd(head, fd);
+	lst = iterate_lst_fd(&head, fd);
 	if (*line)
 		*line = NULL;
 	while (ret > 0)
-			ret = ft_read_line(lst, line);
+		ret = ft_read_line(lst, line);
 	if (*line && ft_strchr(*line, '\n'))
 	{
-		printf("<><>%s\n", *line);
+		tmp = lst->content;
 		lst->content = ft_strdup(ft_strchr(*line, '\n') + 1);
-		*line = (ft_strndup(*line, ft_strchr(*line, '\n') - *line));
+		free(tmp);
+		tmp = *line;
+		*line = ft_strndup(*line, ft_strchr(*line, '\n') - *line);
+		free(tmp);
 	}
 	if ((*line) && ((ft_strlen(*line) && ret != -1)))
 		return (1);
-	return (ret == -2) ? 1 : ret;
+	return ((lst->content && ret != -1) ? 1 : ret);
 }
