@@ -1,177 +1,180 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   get_next_line.h                                    :+:      :+:    :+:   */
+/*   get_next_line.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: thendric <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2016/11/29 11:33:27 by thendric          #+#    #+#             */
-/*   Updated: 2016/12/10 13:57:24 by thendric         ###   ########.fr       */
+/*   Created: 2016/12/17 21:56:53 by thendric          #+#    #+#             */
+/*   Updated: 2016/12/17 21:56:56 by thendric         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-
 
 #include "get_next_line.h"
 #include <stdio.h>
 
-//TODO still check if newline in leftover
-
 /*
-** Adds more memory to an already existing string
-** 
-** @param str 		the string to add memory
-** @param amount	the amount of memory to add in bytes
+** ft_mem reallocates memory for a string
 **
-** @return 			the str with more memory allocated
+** @param lst a list which stores content that may need to be copied
+** @param str the string to allocate memory
+** @param amount the amount to allocate in string
+**
+** @return the newly allocated string
 */
-char	*ft_strrealloc(t_ext *lst, char *str, size_t amount)
+
+char		*ft_mem(t_list *lst, char *str, size_t amount)
 {
-	char	*old;
+	char	*new;
+	size_t	buff_size;
 
-	printf("Strlen is: %zu Amount is: %zu\n", ft_strlen(str), amount);
-	printf("Allocating size: %zu\n", BUFF_SIZE * (amount + 1) + ft_strlen(lst->leftover));
-	old = ft_strnew(ft_strlen(str) + ft_strlen(lst->leftover));
-	ft_strcpy(old, str);
-	str = ft_strnew(BUFF_SIZE * (amount + 1) + ft_strlen(lst->leftover));
-	ft_bzero(str, BUFF_SIZE * (amount + 1) + ft_strlen(lst->leftover));
-	ft_strncpy(str, old, BUFF_SIZE * (amount + 1) + 1);
-	free(old);
-	return (str);
-}
-
-/*
-**
-**
-**
-**
-*/
-int 	ft_read_data(t_ext *lst, char *data)
-{
-	long long	c_read;
-
-	if (!(c_read = read(lst->fd, data, BUFF_SIZE)))
-		return (0);
-	if (c_read == -1)
-		return (-1);
-	if (!lst->line[0])
+	buff_size = BUFF_SIZE;
+	if (str)
 	{
-		if (ft_strchr(data, '\n'))
-		{
-			lst->line = (ft_strncat(lst->line, data, ft_strchr(data, '\n') - data));
-			lst->leftover = ft_strdup(data + (ft_strchr(data, '\n') - data + 1));
-		}
-		else
-		{
-			lst->line = ft_strdup(data);
-		}
+		new = ft_strnew(buff_size * (amount + 1) + ft_strlen(lst->content));
+		ft_strncpy(new, str, buff_size * (amount + 1));
+		ft_bzero(str, sizeof(str));
 	}
 	else
 	{
-		if (ft_strchr(data, '\n'))
-		{
-			lst->line = ft_strrealloc(lst, lst->line, (lst->cur_place / BUFF_SIZE));// + ft_strlen(lst->leftover));
-			lst->line = (ft_strncat(lst->line, data, ft_strchr(data, '\n') - data));
-			lst->leftover = ft_strdup(data + (ft_strchr(data, '\n') - data + 1));
-		}
-		else
-		{
-			lst->line = ft_strrealloc(lst, lst->line, (lst->cur_place / BUFF_SIZE));// + ft_strlen(lst->leftover));
-			lst->line = ft_strncat(lst->line, data, c_read);
-			ft_bzero(lst->leftover, ft_strlen(lst->leftover));		}
+		new = ft_strnew(buff_size * (amount + 1) + ft_strlen(lst->content));
+		ft_bzero(new, sizeof(new));
 	}
-	lst->cur_place += c_read;
-	return (c_read);
-}
-
-/*
-** Creates a new t_ext list
-**
-** @param fd the file descriptor of the t_ext
-*/
-t_ext *ft_create_lst(int fd)
-{
-	t_ext	*new;
-
-	new = (t_ext *)malloc(sizeof(t_ext));
-	new->fd = fd;
-	new->line = ft_strnew(BUFF_SIZE);
-	new->leftover = ft_strnew(BUFF_SIZE);
-	ft_bzero(new->line, BUFF_SIZE);
-	new->cur_place = 0;
-	new->next = 0;
+	free(str);
 	return (new);
 }
 
 /*
-** Searchs through a t_ext list for the passed in file descriptor
+** iterate_lst_fd searches through list to create or find lst with fd
 **
-** @param head	lst the beginning of the *lst
-** @param fd 	the file descriptor ro look for
-** @return 		new lst if doesn't exit, location of fd, or add new fd to list
+** @param lst a list holding all the file descriptors and content
+** @param fd the file descriptor to search for or create
+**
+** @return the place in the list with the correct file descriptor
 */
-t_ext 	*iterate_lst_fd(t_ext *lst, int fd)
+
+t_list		*iterate_lst_fd(t_list *lst, int fd)
 {
-	if (!lst)
-	{
-		lst = ft_create_lst(fd);
-		return (lst);
-	}
 	while (lst)
 	{
-		lst->cur_place = 0;
-		if (lst->fd == fd)
-		{
+		if (lst->content_size == (size_t)fd)
 			return (lst);
+		if (lst->next == NULL)
+		{
+			lst->next = ft_lstnew("\0", 1);
+			lst->next->content_size = fd;
 		}
 		lst = lst->next;
 	}
-	lst = ft_create_lst(fd);
 	return (lst);
 }
 
 /*
-** Reads the first line from a file descriptor and returns it
-** without the \n
+** f_norm checks if t_list content has newline and if data was read
 **
-** @param  fd   the file descriptor from which to read
-** @param  line the pointer to a char in which to store the line read
-** @return      1 if success, 0 when completed, -1 if error
+** @param lst a lst which stores content read
+** @param line where to store the line being returned
+** @param b_read the amount of bytes read
+**
+** @return 0 if end of line otherwise 1
 */
 
-// SET DATA TO LEFTOVER
-// CHECK IF DATA HAS NEWLINE BEFORE WHILE LOOP
-
-int		get_next_line(const int fd, char **line)
+ssize_t		f_norm(t_list *lst, char **line, ssize_t b_read)
 {
-	static t_ext	*head;
-	t_ext			*lst;
-	char			*data;
+	if (ft_strchr(lst->content, '\n'))
+	{
+		*line = (ft_strncat(*line, lst->content,
+			ft_strchr(lst->content, '\n') - (char *)lst->content));
+		return (0);
+	}
+	if (b_read)
+	{
+		*line = ft_strcat(*line, lst->content);
+		if (b_read < BUFF_SIZE)
+		{
+			lst->content = NULL;
+			return (0);
+		}
+	}
+	else
+	{
+		lst->content = NULL;
+		return (0);
+	}
+	return (1);
+}
+
+/*
+** ft_read_line allocated memory to line and checks for end of line
+**
+** @param lst a lst which stores content that may need to be copied
+** @param line where to store the line being returned
+**
+** @return 0 end of line 1 not end of line -1 error reading -2 \n in content
+*/
+
+ssize_t		ft_read_line(t_list *lst, char **line)
+{
+	ssize_t	i;
+
+	i = 1;
+	if (!lst->content &&
+		!(i = read(lst->content_size, lst->content, BUFF_SIZE)))
+		return (0);
+	if (*line && BUFF_SIZE)
+	{
+		printf("HERE!\n");
+		*line = ft_mem(lst, *line, (ft_strlen(*line) / BUFF_SIZE));
+	}
+	else if (BUFF_SIZE)
+		*line = ft_mem(lst, lst->content, ft_strlen(lst->content) / BUFF_SIZE);
+	if (ft_strchr(*line, '\n'))
+		ft_memcpy(*line, *line + (ft_strchr(*line, '\n') - *line) + 1,
+			ft_strlen(*line));
+	if (!(ft_strchr(lst->content, '\n')) && !(ft_strchr(*line, '\n')))
+	{
+		lst->content = ft_strnew(BUFF_SIZE);
+		i = read(lst->content_size, lst->content, BUFF_SIZE);
+		if (i == -1)
+			return (-1);
+	}
+	if (!f_norm(lst, line, i))
+		return (lst->content) ? -2 : 0;
+	return (ft_strlen(*line));
+}
+
+/*
+** get_next_line gets the next line of a file and stores it in line
+**
+** @param fd the file descriptor to read from
+** @param line where to store the line being returned
+**
+** @return 0 end of line 1 not end of line -1 error reading -2 \n in content
+*/
+
+int			get_next_line(const int fd, char **line)
+{
+	static t_list	*head;
+	t_list			*lst;
 	int				ret;
 
 	ret = 1;
 	if (fd < 0 || !line || BUFF_SIZE < 1)
 		return (-1);
-	if (head == NULL)
-		head = ft_create_lst(fd);
-	lst = head;
-	lst = iterate_lst_fd(lst, fd);
-	lst->line = ft_strdup(lst->leftover);
-	data = ft_strnew(ft_strlen(lst->line) + BUFF_SIZE);
-	while ((!(ft_strchr(data, '\n'))) && (ret) && (ret != -1) && !(ft_strchr(lst->line, '\n')))
+	if (!head)
+		head = ft_lstnew("\0", 1);
+	lst = iterate_lst_fd(head, fd);
+	if (*line)
+		*line = NULL;
+	while (ret > 0)
+			ret = ft_read_line(lst, line);
+	if (*line && ft_strchr(*line, '\n'))
 	{
-		data = ft_strnew(ft_strlen(lst->line) + BUFF_SIZE);
-		ret = ft_read_data(lst, data);
+		printf("<><>%s\n", *line);
+		lst->content = ft_strdup(ft_strchr(*line, '\n') + 1);
+		*line = (ft_strndup(*line, ft_strchr(*line, '\n') - *line));
 	}
-	if (ft_strchr(lst->leftover, '\n') && ret < BUFF_SIZE)
-	{
-		lst->line = ft_strndup(lst->leftover, ft_strchr(lst->leftover, '\n') - lst->leftover);
-		lst->leftover = ft_strdup(lst->leftover + (ft_strchr(lst->leftover, '\n') - lst->leftover + 1));
-		ret = 1;
-	}
-	*line = ft_strdup(lst->line);
-	ft_bzero(lst->line, ft_strlen(lst->line));
-	ft_bzero(data, ft_strlen(data));
-	if (ft_strchr(lst->leftover, '\n'))
-		ret = 1;
-	return (ret);
+	if ((*line) && ((ft_strlen(*line) && ret != -1)))
+		return (1);
+	return (ret == -2) ? 1 : ret;
 }
