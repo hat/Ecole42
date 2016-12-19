@@ -10,9 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-
 #include "get_next_line.h"
-#include <stdio.h>
 
 char	*ft_realloc(t_list *lst, char *str, size_t amount)
 {
@@ -86,7 +84,7 @@ ssize_t		ft_read_line(t_list *lst, char **line)
 	ssize_t	b_read;
 
 	b_read = 1;
-	if (!lst->content)
+	if (!lst->content && !(b_read = read(lst->content_size, lst->content, BUFF_SIZE)))
 	{
 		*line = NULL;
 		return (0);
@@ -105,7 +103,7 @@ ssize_t		ft_read_line(t_list *lst, char **line)
 			return (-1);
 	}
 	if (!f_norm(lst, line, b_read))
-		return (0);
+		return (lst->content) ? -2 : 0;
 	return (ft_strlen(*line));
 }
 
@@ -133,7 +131,7 @@ int		get_next_line(const int fd, char **line)
 		lst->content = ft_strdup(ft_strchr(*line, '\n') + 1);
 		*line = (ft_strndup(*line, ft_strchr(*line, '\n') - *line));
 	}
-	if (*line && ft_strlen(*line) && ret != -1)
+	if ((*line) && ((ft_strlen(*line) && ret != -1)))
 		return (1);
-	return (ret);
+	return (ret == -2) ? 1 : ret;
 }
