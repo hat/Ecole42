@@ -128,9 +128,9 @@ ssize_t		ft_read_line(t_list *lst, char **line)
 		*line = NULL;
 		return (0);
 	}
-	if (*line)
+	if (*line && BUFF_SIZE > 0)
 		*line = ft_mem(lst, *line, (ft_strlen(*line) / BUFF_SIZE));
-	else
+	else if (BUFF_SIZE > 0)
 		*line = ft_mem(lst, lst->content, ft_strlen(lst->content) / BUFF_SIZE);
 	if (ft_strchr(*line, '\n'))
 		*line = ft_strdup(*line + (ft_strchr(*line, '\n') - *line) + 1);
