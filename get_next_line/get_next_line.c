@@ -58,8 +58,6 @@ ssize_t		f_norm(t_list *lst, char **line, ssize_t b_read)
 	{
 		*line = (ft_strncat(*line, lst->content, ft_strchr(lst->content, '\n')
 			- (char *)lst->content));
-		lst->content = ft_strdup(lst->content + (ft_strchr(lst->content, '\n')
-			- (char *)lst->content) + 1);
 		return (0);
 	}
 	if (b_read)
