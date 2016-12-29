@@ -1,7 +1,7 @@
 
 // RETURN VALUES
 // These functions return the number of characters printed (not including
-// the trailing `\0' used to end output to strings). These functions return a negative value if an error occurs.
+// the trailing `\0' used to end output to strings)-> These functions return a negative value if an error occurs->
 
 //TODO Check if no parameters were passed in
 	// if no params and no % print *format
@@ -9,78 +9,81 @@
 
 //TODO Check for % symbol in *format
 
+//TODO Use a struct to store everything as to not print if error occurs later
+
 #include "ft_printf.h"
 
-int 	ft_convers_percent(void)
+int 	ft_convers_percent(t_input *input)
 {
-	ft_putchar('%');
-	printf("Exit\n");
+	input->str = ft_strjoin(input->str, "%");
+	input->form = input->form + 1;
 	return (0);
 }
 
-int 	ft_convers_c(va_list ap)
+int 	ft_convers_c(t_input *input)
 {
-	char c;
+	char 	*c;
 
-	c = va_arg(ap, int);
-	ft_putchar(c);
+	c = ft_strnew(2);
+	c[0] = va_arg(input->ap, int);
+	c[1] = '\0';
+	input->str = ft_strjoin(input->str, c);
+	input->form = input->form + 1;
 	return (0);
 }
 
-int 	ft_convers_s(va_list ap)
+int 	ft_convers_s(t_input *input)
 {
 	char *str;
 
-	str = va_arg(ap, char *);
-	ft_putstr(str);
+	str = va_arg(input->ap, char *);
+	input->str = ft_strjoin(input->str, str);
+	//1 will be number of flags!
+	input->form = input->form + 1;
 	return (0);
 }
 
-int 	ft_convers_f(va_list ap)
+int 	ft_convers_id(t_input *input)
 {
 	int num;
+	char 	*numstr;
 
-	num  = va_arg(ap, int);
-	ft_putnbr(num);
+	num  = va_arg(input->ap, int);
+	numstr = ft_itoa(num);
+	input->str = ft_strjoin(input->str, numstr);
+	//1 will be number of flags!
+	input->form = input->form + 1;
 	return (0);
 }
 
-int 	ft_convers_i(va_list ap)
+int 	ft_convers_f(t_input *input)
 {
-	int num;
+	double 	num;
+	char 	*numstr;
 
-	num  = va_arg(ap, int);
-	ft_putnbr(num);
+	numstr = NULL;
+	num  = va_arg(input->ap, double);
+	//Create print number with decimal point
+	//ft_putnbr(num);
 	return (0);
 }
 
-int 	ft_convers_d(va_list ap)
+int 	ft_pickconvers(t_input *input)
 {
-	int num;
-
-	num  = va_arg(ap, int);
-	ft_putnbr(num);
+	if (input->c == 'i' || input->c == 'd')
+		ft_convers_id(input);
+	if (input->c == 's')
+		ft_convers_s(input);
+	if (input->c == 'c')
+		ft_convers_c(input);
+	if (input->c == 'f')
+		ft_convers_f(input);
+	if (input->c == '%')
+		ft_convers_percent(input);
 	return (0);
 }
 
-int 	ft_pickconvers(char c, va_list ap)
-{
-	if (c == 'd')
-		ft_convers_d(ap);
-	if (c == 'i')
-		ft_convers_i(ap);
-	if (c == 's')
-		ft_convers_s(ap);
-	if (c == 'c')
-		ft_convers_c(ap);
-	if (c == 'f')
-		ft_convers_f(ap);
-	if (c == '%')
-		ft_convers_percent();
-	return (0);
-}
-
-int 	ft_findconvers(const char *format, va_list ap)
+int 	ft_findconvers(t_input *input)
 {
 	int i;
 	int is_space;
@@ -88,52 +91,80 @@ int 	ft_findconvers(const char *format, va_list ap)
 
 	i = 0;
 	is_space = 0;
-	if (format[0] == ' ')
+	if (input->form[0] == ' ')
 	{
 		is_space = 1;
 		i++;
 	}
-	while (format[i] && format[i] != ' ')
+	while (input->form[i] && input->form[i] != ' ')
 	{
-		c = format[i];
+		c = input->form[i + 1];
 		if (c == 'd' || c == 'i' || c == 's' || c == 'c'
 			|| c == '%' || c == 'f')
 		{
-			ft_pickconvers(c, ap);
+			input->c = c;
+			input->form = input->form + i;
+			ft_pickconvers(input);
 		}
 		i++;
 	}
-	//One must be number of chars after %
-	ft_init(format + 1, ap);
+	input->form = input->form + 1;
+	ft_init(input);
 	return (0);
 }
 
-int 	ft_percentsign(const char *format, va_list ap)
+int 	ft_percentsign(t_input *input)
 {
 	char 	*prev;
 
-	prev = ft_strndup(format, (ft_strchr(format, '%') - format));
-	ft_putstr(prev);
+	prev = ft_strndup(input->form, (ft_strchr(input->form, '%') - input->form));
+	input->form = input->form + (ft_strchr(input->form, '%') - input->form);
+	//printf("IF: %s\n", input->form);
+	if (!input->str)
+		input->str = ft_strdup(prev);
+	else
+		input->str = ft_strjoin(input->str, prev);
 	free(prev);
-	ft_findconvers(ft_strchr(format, '%') + 1, ap);
+	ft_findconvers(input);
 	return (0);
 }
 
-int 	ft_init(const char *format, va_list ap)
+int 	ft_init(t_input *input)
 {
-	if (!(ft_strchr(format, '%')))
-		ft_putstr(format);
-	else if (ft_strchr(format, '%'))
-		ft_percentsign(format, ap);
+	if (!(ft_strchr(input->form, '%')))
+	{
+		if (!input->str)
+			input->str = ft_strdup(input->form);
+		else
+			input->str = ft_strjoin(input->str, input->form);
+	}
+	else if (ft_strchr(input->form, '%'))
+		ft_percentsign(input);
 	return (0);
+}
+
+t_input	*ft_init_tinput(void)
+{
+	t_input 	*new;
+
+	new = (t_input *)malloc(sizeof(t_input));
+	new->form = NULL;
+	new->str = NULL;
+	new->size = 0;
+
+	return (new);
 }
 
 int		ft_printf(const char *format, ...)
 {
+	t_input		*input;
 	va_list		ap;
 
-	va_start(ap, format);
-	ft_init(format, ap);
+	input = ft_init_tinput();
+	va_start(input->ap, format);
+	input->form = (char *)format;
+	ft_init(input);
 	va_end(ap);
+	ft_putstr(input->str);
 	return (0);
 }
