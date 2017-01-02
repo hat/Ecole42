@@ -29,8 +29,8 @@ int 	ft_pickconvers(t_input *input)
 		ft_convers_oO(input);
 	if (input->c == 'x' || input->c == 'X')
 		ft_convers_xX(input);
-	if (input->c == 'u' || input->c == 'U')
-		ft_convers_uU(input);
+	if (input->c == 'u' || input->c == 'U' || input->c == 'D')
+		ft_convers_uUD(input);
 	if (input->c == 'p')
 		ft_convers_p(input);
 	return (0);
@@ -52,10 +52,7 @@ int 	ft_findconvers(t_input *input)
 	while (input->form[i])
 	{
 		c = input->form[i + 1];
-		if (c == 'd' || c == 'i' || c == 's' || c == 'c'
-			|| c == '%' || c == 'f' || c == 'o' || c == 'x'
-			|| c == 'u' || c == 'O' || c == 'X' || c == 'p'
-			|| c == 'U')
+		if (ft_isconversion(c))
 		{
 			input->c = c;
 			ft_pickconvers(input);

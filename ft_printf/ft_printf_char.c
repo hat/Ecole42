@@ -2,43 +2,55 @@
 
 int 	ft_convers_percent(t_input *input)
 {
-	input->str = ft_strjoin(input->str, "%");
-	input->form = input->form + 1;
+	int flag;
+
+	flag = 1;
+	flag += ft_getflags(input);
+	ft_add_width(input, 1, "%");
+	input->form = input->form + flag;
 	return (0);
 }
 
 int 	ft_convers_c(t_input *input)
 {
+	int flag;
 	char 	*c;
 
+	flag = 1;
 	c = ft_strnew(2);
 	c[0] = va_arg(input->ap, int);
 	c[1] = '\0';
-	input->str = ft_strjoin(input->str, c);
-	input->form = input->form + 1;
+	flag += ft_getflags(input);
+	ft_add_width(input, 1, c);
+	input->form += flag;
 	return (0);
 }
 
 int 	ft_convers_s(t_input *input)
 {
+	int flag;
 	char *str;
 
+	flag = 1;
 	str = va_arg(input->ap, char *);
-	input->str = ft_strjoin(input->str, str);
-	//1 will be number of flags!
-	input->form = input->form + 1;
+	flag += ft_getflags(input);
+	ft_add_width(input, ft_strlen(str), str);
+	input->form += flag;
 	return (0);
 }
 
 int 	ft_convers_p(t_input *input)
 {
+	int flag;
 	int num;
 	char *numstr;
 
+	flag = 1;
 	num = va_arg(input->ap, int);
 	numstr = ft_itoa_base(num, 16);
-	input->str = ft_strjoin(input->str, "0x10");
-	input->str = ft_strjoin(input->str, numstr);
-	input->form += 1;
+	flag += ft_getflags(input);
+	numstr = ft_strjoin("0x10", numstr);
+	ft_add_width(input, ft_strlen(numstr), numstr);
+	input->form += flag;
 	return(0);
 }
