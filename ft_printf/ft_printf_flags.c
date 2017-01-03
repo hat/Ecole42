@@ -1,11 +1,44 @@
-//ANY WAY TO ADD GET WIDTH IN CHECK FLAGS!?!?!?
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   ft_printf_flags.c                                  :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: thendric <marvin@42.fr>                    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2017/01/02 11:50:11 by thendric          #+#    #+#             */
+/*   Updated: 2017/01/02 11:54:52 by thendric         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
 #include "ft_printf.h"
 
-char 	*ft_checkcon_cap(t_input *input, char *str)
+//WIDTH AND # FLAGS COINCIDE WITH EACH OTHER!!!!
+//REALLY THINK ABOUT THE ORDER OF THE FLAGS AND CHANGING THE STRING!!!
+
+long	ft_vartype(t_input *input)
 {
-	if (ft_getconversion(input->form) == 'X')
-		ft_touppercase(str);
+	int 	i;
+	long	num;
+	int 	islong;
+
+	i = 0;
+	islong = 0;
+	while (input->flags[i])
+	{
+		if (input->flags[i] == 'l' || input->flags[i] == 'j')
+			islong++;
+		i++;
+	}
+	if (islong)
+		num = (long)input->var;
+	else
+		num = (int)input->var;
+	return (num);
+}
+
+char	*ft_flagspace(char *str)
+{
+	str = ft_strjoin(" ", str);
 	return (str);
 }
 
@@ -22,7 +55,7 @@ char	*ft_flagpound(t_input *input, char *str, int upper)
 	else if (ft_getconversion(input->form) == 'O')
 		prefix = ft_strdup("0");
 	else
-		printf("Error ft_flagpound\n");  //DELETE THIS OR CHANGE!!!
+		printf("Error ft_flagpound\n");
 	if (upper)
 		str = ft_strjoin(prefix, str);
 	else
@@ -36,36 +69,6 @@ char	*ft_flagplus(char *str)
 {
 	str = ft_strjoin("+", str);
 	return (str);
-}
-
-void	ft_add_width(t_input *input, size_t var_size, char *str)
-{
-	int 	i;
-	int 	leftjustify;
-	char	*fill;
-
-	i = 0;
-	leftjustify = 0;
-	fill = ft_strnew(1);
-	fill[0] = ' ';
-	while (ft_isflag(input->flags[i]))
-	{
-		if (input->flags[i] == '-')
-		{
-			fill[0] = ' ';
-			leftjustify++;
-		}
-		if (input->flags[i] == '0' && !leftjustify)
-			fill[0] = '0';
-		i++;
-	}
-	if (leftjustify)
-		input->str = ft_strjoin(input->str, str);
-	while (input->width-- > (int)var_size)
-		input->str = ft_strjoin(input->str, fill);
-	if (!leftjustify)
-		input->str = ft_strjoin(input->str, str);
-	ft_bzero(input->flags, ft_strlen(input->flags));
 }
 
 int		ft_atoi_flags(const char *str)
@@ -93,27 +96,9 @@ int		ft_atoi_flags(const char *str)
 	return (ans * neg);
 }
 
-void	ft_checkflags(t_input *input, char *str)
-{
-	int 	i;
-
-	i = 0;
-	while (input->flags[i])
-	{
-		if (input->flags[i] == '+')
-			str = ft_flagplus(str);
-		if (input->flags[i] == '#')
-			str = ft_flagpound(input, str, ft_isupper(input->c));
-		i++;
-	}
-	str = ft_checkcon_cap(input, str);
-	ft_add_width(input, ft_strlen(str), str);
-}
-
-//TODO CHECK IF ALL FLAGS PASSED IN WERE VALID
 int		ft_getflags(t_input *input)
 {
-	int 	i;
+	int		i;
 	char	*c;
 
 	i = 1;
@@ -123,5 +108,111 @@ int		ft_getflags(t_input *input)
 	c[i - 1] = '\0';
 	input->flags = ft_strjoin(input->flags, c);
 	input->width = ft_atoi_flags(input->flags);
+	i = 0;
+	while (input->flags[i] && input->flags[i] != '.')
+		i++;
+	input->precision = ft_atoi_flags(&input->flags[i + 1]);
 	return (ft_strlen(input->flags));
+}
+
+//Need all checks that will eventually add length to str
+//or change the getwidth function
+char	*ft_addwidth(t_input *input, char *str)
+{
+	int 	i;
+	int 	offset;
+	int 	leftjustify;
+	char 	*fill;
+
+	i = 0;
+	offset = ft_strlen(str);
+	leftjustify = 0;
+	fill = ft_strnew(1);
+	fill[0] = ' ';
+	while (ft_isflag(input->flags[i]))
+	{
+		if (input->flags[i] == '0')
+			fill[0] = '0';
+		if (input->flags[i] == '-')
+			leftjustify++;
+		if (input->flags[i] == '#' && ft_tolower(input->c) == 'x')
+			offset += 2;
+		if (input->flags[i] == '#' && ft_tolower(input->c) == 'o')
+			offset += 1;
+		i++;
+	}
+	while (input->width-- > offset)
+	{
+		if (!leftjustify)
+			str = ft_strjoin(fill, str);
+		else
+			str = ft_strjoin(str, fill);
+	}
+	return (str);
+}
+//UPPER NOT USED BUT MAY BE BETTER??!?!?!?!?
+
+
+//Still used for percent, c, c, p
+void	ft_add_width(t_input *input, size_t var_size, char *str)
+{
+	int		i;
+	int		leftjustify;
+	char	*fill;
+
+	i = 0;
+	leftjustify = 0;
+	fill = ft_strnew(1);
+	fill[0] = ' ';
+	while (ft_isflag(input->flags[i]))
+	{
+		if (input->flags[i] == '-')
+		{
+			fill[0] = ' ';
+			leftjustify++;
+		}
+		if (input->flags[i] == '0' && !leftjustify)
+			fill[0] = '0';
+		i++;
+	}
+	if (leftjustify)
+		input->str = ft_strjoin(input->str, str);
+	while (input->width-- > (int)var_size)
+		input->str = ft_strjoin(input->str, fill);
+	if (!leftjustify)
+		input->str = ft_strjoin(input->str, str);
+	ft_bzero(input->flags, ft_strlen(input->flags));
+}
+
+char	*ft_checkcon_cap(t_input *input, char *str)
+{
+	if (ft_getconversion(input->form) == 'X')
+		ft_touppercase(str);
+	return (str);
+}
+
+//NEEDS TO CHECK IF A FLAG EXISTS ONLY ONCE NOT MANY TIMES
+//USE EITHER AN ARRAY OR ADD EACH ONE TO STRUCT...
+//MOST LIKELY ADD TO STRUCT!!!
+void	ft_checkflags(t_input *input, char *str)
+{
+	int		i;
+
+	i = 0;
+	//str = ft_addwidth(input, str);
+	while (input->flags[i])
+	{
+		if (input->flags[i] == '+')
+			str = ft_flagplus(str);
+		if (input->flags[i] == '#' && ft_strcmp(str, "0"))
+			str = ft_flagpound(input, str, ft_isupper(input->c));
+		if (input->flags[i] == ' ' && ft_strlen(input->flags) == 1 && str[0] != '-')
+			str = ft_flagspace(str);
+		i++;
+	}
+	//str = ft_checkcon_cap(input, str);
+	//input->str = ft_strjoin(input->str, str);
+	ft_add_width(input, ft_strlen(str), str);
+	if (input->c == 'X')
+		ft_touppercase(input->str);
 }

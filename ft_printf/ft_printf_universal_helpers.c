@@ -1,6 +1,18 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   ft_printf_universal_helpers.c                      :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: thendric <marvin@42.fr>                    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2017/01/02 11:51:30 by thendric          #+#    #+#             */
+/*   Updated: 2017/01/02 11:51:56 by thendric         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "ft_printf.h"
 
-int 	ft_isconversion(char c)
+int		ft_isconversion(char c)
 {
 	if (c == 'd' || c == 'i' || c == 's' || c == 'c'
 			|| c == '%' || c == 'f' || c == 'o' || c == 'x'
@@ -14,7 +26,7 @@ int 	ft_isconversion(char c)
 
 char	ft_getconversion(char *str)
 {
-	int i;
+	int		i;
 
 	i = 1;
 	while (str[i])
@@ -23,7 +35,7 @@ char	ft_getconversion(char *str)
 			return (str[i]);
 		i++;
 	}
-	return ' ';
+	return (' ');
 }
 
 int		ft_isflag(char c)

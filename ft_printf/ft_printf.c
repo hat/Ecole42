@@ -1,20 +1,20 @@
-
-// RETURN VALUES
-// These functions return the number of characters printed (not including
-// the trailing `\0' used to end output to strings)-> These functions return a negative value if an error occurs->
-
-//TODO Check if no parameters were passed in
-	// if no params and no % print *format
-	// if no params and % print error (more % conversions than data arguments)
-
-//TODO Check for % symbol in *format
-
-//TODO Use a struct to store everything as to not print if error occurs later
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   ft_printf.c                                        :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: thendric <marvin@42.fr>                    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2017/01/02 11:45:00 by thendric          #+#    #+#             */
+/*   Updated: 2017/01/02 11:55:34 by thendric         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
 #include "ft_printf.h"
 
-int 	ft_pickconvers(t_input *input)
+int		ft_pickconvers(t_input *input)
 {
+	input->var = va_arg(input->ap, void *);
 	if (input->c == 'i' || input->c == 'd')
 		ft_convers_id(input);
 	if (input->c == 's')
@@ -36,11 +36,11 @@ int 	ft_pickconvers(t_input *input)
 	return (0);
 }
 
-int 	ft_findconvers(t_input *input)
+int		ft_findconvers(t_input *input)
 {
-	int i;
-	int is_space;
-	char c;
+	int		i;
+	int		is_space;
+	char	c;
 
 	i = 0;
 	is_space = 0;
@@ -56,7 +56,7 @@ int 	ft_findconvers(t_input *input)
 		{
 			input->c = c;
 			ft_pickconvers(input);
-			break;
+			break ;
 		}
 		i++;
 	}
@@ -65,9 +65,9 @@ int 	ft_findconvers(t_input *input)
 	return (0);
 }
 
-int 	ft_percentsign(t_input *input)
+int		ft_percentsign(t_input *input)
 {
-	char 	*prev;
+	char	*prev;
 
 	prev = ft_strndup(input->form, (ft_strchr(input->form, '%') - input->form));
 	input->form = input->form + (ft_strchr(input->form, '%') - input->form);
@@ -80,7 +80,7 @@ int 	ft_percentsign(t_input *input)
 	return (0);
 }
 
-int 	ft_init(t_input *input)
+int		ft_init(t_input *input)
 {
 	if (!(ft_strchr(input->form, '%')))
 	{
@@ -96,26 +96,25 @@ int 	ft_init(t_input *input)
 
 t_input	*ft_init_tinput(const char *format)
 {
-	t_input 	*new;
+	t_input	*new;
 
 	new = (t_input *)malloc(sizeof(t_input));
-	new->form = ft_strdup((char *)format);//(char *)format;
+	new->form = ft_strdup((char *)format);
 	new->flags = ft_strnew(1);
 	new->str = NULL;
 	new->size = 0;
-
 	return (new);
 }
 
 int		ft_printf(const char *format, ...)
 {
-	t_input		*input;
-	va_list		ap;
+	t_input	*input;
+	va_list	ap;
 
 	input = ft_init_tinput(format);
 	va_start(input->ap, format);
 	ft_init(input);
 	va_end(ap);
 	ft_putstr(input->str);
-	return (0);
+	return (ft_strlen(input->str));
 }

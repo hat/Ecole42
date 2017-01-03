@@ -1,23 +1,35 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   ft_printf.h                                        :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: thendric <marvin@42.fr>                    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2017/01/02 11:46:55 by thendric          #+#    #+#             */
+/*   Updated: 2017/01/02 11:47:28 by thendric         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #ifndef FT_PRINTF_H
 # define FT_PRINTF_H
 
-//TEST
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-
+# include <stdio.h>
+# include <stdlib.h>
+# include <string.h>
 # include <stdarg.h>
-# include "../includes/libft/libft.h"
+# include "libft.h"
 
 typedef struct 	s_read
 {
 	va_list		ap;
+	void		*var;
 	char		*form;
 	char		*str;
 	char		*flags;
 	char		c;
 	long long	size;
 	int 		width;
+	int 		precision;
 }				t_input;
 
 /*
@@ -41,6 +53,7 @@ int 	ft_convers_p(t_input *input);
 int		ft_isflag(char c);
 int 	ft_isconversion(char c);
 char	ft_getconversion(char *str);
+long	ft_vartype(t_input *input);
 /*
 ** Declare functionality functions
 */
