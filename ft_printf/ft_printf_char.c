@@ -18,7 +18,7 @@ int		ft_convers_percent(t_input *input)
 
 	flag = 1;
 	flag += ft_getflags(input);
-	ft_add_width(input, 1, "%");
+	ft_checkflags(input, "%");
 	input->form = input->form + flag;
 	return (0);
 }
@@ -33,7 +33,7 @@ int		ft_convers_c(t_input *input)
 	c[0] = (int)input->var;
 	c[1] = '\0';
 	flag += ft_getflags(input);
-	ft_add_width(input, 1, c);
+	ft_checkflags(input, c);
 	input->form += flag;
 	return (0);
 }
@@ -46,7 +46,7 @@ int		ft_convers_s(t_input *input)
 	flag = 1;
 	str = (char *)input->var;
 	flag += ft_getflags(input);
-	ft_add_width(input, ft_strlen(str), str);
+	ft_checkflags(input, str);
 	input->form += flag;
 	return (0);
 }
@@ -62,7 +62,7 @@ int		ft_convers_p(t_input *input)
 	numstr = ft_itoa_base(num, 16);
 	flag += ft_getflags(input);
 	numstr = ft_strjoin("0x10", numstr);
-	ft_add_width(input, ft_strlen(numstr), numstr);
+	ft_checkflags(input, numstr);
 	input->form += flag;
 	return (0);
 }

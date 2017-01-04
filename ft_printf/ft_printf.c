@@ -75,7 +75,7 @@ int		ft_percentsign(t_input *input)
 		input->str = ft_strdup(prev);
 	else
 		input->str = ft_strjoin(input->str, prev);
-	free(prev);
+	ft_memdel((void **)&prev);
 	ft_findconvers(input);
 	return (0);
 }
@@ -103,6 +103,11 @@ t_input	*ft_init_tinput(const char *format)
 	new->flags = ft_strnew(1);
 	new->str = NULL;
 	new->size = 0;
+	new->flagplus = 0;
+	new->flagpound = 0;
+	new->flagspace = 0;
+	new->flagminus = 0;
+	new->flagzero = 0;
 	return (new);
 }
 
@@ -116,5 +121,6 @@ int		ft_printf(const char *format, ...)
 	ft_init(input);
 	va_end(ap);
 	ft_putstr(input->str);
+	free(input);
 	return (ft_strlen(input->str));
 }
