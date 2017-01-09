@@ -51,11 +51,12 @@ char	*ft_flagwidth(t_input *input, char *str, int left)
 	fill[0] = ' ';
 	if (!input->flagminus && input->flagzero)
 		fill[0] = '0';
-	if (input->flagpound && ft_tolower(input->c) == 'x')
+	if (input->flagpound && ft_tolower(input->c) == 'x' && (input->flagminus || input->flagzero))
 		offset += 2;
-	if (input->flagpound && ft_tolower(input->c) == 'o')
+	if (input->flagpound && ft_tolower(input->c) == 'o' && (input->flagminus || input->flagzero))
 		offset += 1;
 	//HUGE MEMORY LEAK -- WHAT DO I DO?!?!?
+	//THIS METHOD IS PROBABLY ALL WRONG!!!
 	while (input->width-- > offset)
 	{
 		if (left)

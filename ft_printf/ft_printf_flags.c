@@ -89,7 +89,7 @@ void	ft_checkflags(t_input *input, char *str)
 			numcheck++;
 		if (input->flags[i] == '+')
 			input->flagplus++;
-		if (input->flags[i] == '#' && ft_strcmp(str, "0"))
+		if (input->flags[i] == '#' && ft_strcmp(str, "0") && input->precision != 0)
 			input->flagpound++;
 		if (input->flags[i] == '-')
 			input->flagminus++;
@@ -119,7 +119,8 @@ int		ft_getflags(t_input *input)
 	i = 0;
 	while (input->flags[i] && input->flags[i] != '.')
 		i++;
-	input->precision = ft_atoi_flags(&input->flags[i + 1]);
+	if (input->flags[i] == '.')
+		input->precision = ft_atoi_flags(&input->flags[i + 1]);
 	ft_memdel((void **)&c);
 	return (ft_strlen(input->flags));
 }

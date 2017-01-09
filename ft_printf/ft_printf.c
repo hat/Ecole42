@@ -108,6 +108,7 @@ t_input	*ft_init_tinput(const char *format)
 	new->flagspace = 0;
 	new->flagminus = 0;
 	new->flagzero = 0;
+	new->precision = -1;
 	return (new);
 }
 

@@ -30,6 +30,11 @@ typedef struct 	s_read
 	long long	size;
 	int 		width;
 	int 		precision;
+	int 		flagplus;
+	int 		flagpound;
+	int 		flagspace;
+	int 		flagminus;
+	int 		flagzero;
 }				t_input;
 
 /*
@@ -48,6 +53,13 @@ int 	ft_convers_c(t_input *input);
 int 	ft_convers_s(t_input *input);
 int 	ft_convers_p(t_input *input);
 /*
+** Declare flag operation functions
+*/
+char	*ft_flagspace(char *str);
+char	*ft_flagpound(t_input *input, char *str);
+char	*ft_flagplus(char *str);
+char	*ft_flagwidth(t_input *input, char *str, int left);
+/*
 ** Declare universal helper functions
 */
 int		ft_isflag(char c);
@@ -57,6 +69,7 @@ long	ft_vartype(t_input *input);
 /*
 ** Declare functionality functions
 */
+char    *ft_checkprecision(t_input *input, char *str);
 void	ft_add_width(t_input *input, size_t var_size, char *str);
 void	ft_checkflags(t_input *input, char *str);
 int		ft_getflags(t_input *input);
