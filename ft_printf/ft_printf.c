@@ -19,7 +19,7 @@ int		ft_pickconvers(t_input *input)
 		ft_convers_id(input);
 	if (input->c == 's')
 		ft_convers_s(input);
-	if (input->c == 'c')
+	if (input->c == 'c' || input->c == 'C')
 		ft_convers_c(input);
 	if (input->c == 'f')
 		ft_convers_f(input);
@@ -71,6 +71,8 @@ int		ft_percentsign(t_input *input)
 
 	prev = ft_strndup(input->form, (ft_strchr(input->form, '%') - input->form));
 	input->form = input->form + (ft_strchr(input->form, '%') - input->form);
+	//Needed to clear it all before running again!!!
+	ft_bzero(input->flags, ft_strlen(input->flags));
 	if (!input->str)
 		input->str = ft_strdup(prev);
 	else

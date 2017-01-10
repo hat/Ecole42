@@ -43,27 +43,27 @@ char	*ft_flagwidth(t_input *input, char *str, int left)
 {
 	int 	i;
 	int 	offset;
-	char 	*fill;
+	char 	fill;
+	char	*width;
+	char	*new;
 
 	i = 0;
 	offset = ft_strlen(str);
-	fill = ft_strnew(1);
-	fill[0] = ' ';
+	fill = ' ';
 	if (!input->flagminus && input->flagzero)
-		fill[0] = '0';
+		fill = '0';
 	if (input->flagpound && ft_tolower(input->c) == 'x' && (input->flagminus || input->flagzero))
 		offset += 2;
 	if (input->flagpound && ft_tolower(input->c) == 'o' && (input->flagminus || input->flagzero))
 		offset += 1;
-	//HUGE MEMORY LEAK -- WHAT DO I DO?!?!?
-	//THIS METHOD IS PROBABLY ALL WRONG!!!
-	while (input->width-- > offset)
-	{
-		if (left)
-			str = ft_strjoin(str, fill);
-		else
-			str = ft_strjoin(fill, str);
-	}
-	ft_memdel((void **)&fill);
-	return (str);
+	width = ft_strnew(input->width);
+	if (input->width - offset > 0)
+		ft_memset(width, fill, input->width - offset);
+	if (left)
+		new = ft_strjoin(str, width);
+	else
+		new = ft_strjoin(width, str);
+	//Says free non malloc pointer?
+	//ft_memdel((void **)&str);
+	return (new);
 }

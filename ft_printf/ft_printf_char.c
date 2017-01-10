@@ -45,6 +45,8 @@ int		ft_convers_s(t_input *input)
 
 	flag = 1;
 	str = (char *)input->var;
+	if (!str)
+		str = "(null)";
 	flag += ft_getflags(input);
 	str = ft_checkprecision(input, str);
 	ft_checkflags(input, str);
