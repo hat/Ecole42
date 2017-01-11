@@ -15,10 +15,13 @@
 int		ft_convers_percent(t_input *input)
 {
 	int		flag;
+	char 	*str;
 
 	flag = 1;
+	str = ft_strnew(1);
+	str[0] = '%';
 	flag += ft_getflags(input);
-	ft_checkflags(input, "%");
+	ft_checkflags(input, str);
 	input->form = input->form + flag;
 	return (0);
 }

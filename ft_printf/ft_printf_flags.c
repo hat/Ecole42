@@ -83,6 +83,9 @@ void	ft_checkflags(t_input *input, char *str)
 
 	i = 0;
 	numcheck = 0;
+	//Uncommenting gets other problems wrong but same amount
+	// if (!*str && input->precision == -1)
+	// 	input->size++;
 	while (input->flags[i])
 	{
 		if (input->flags[i] >= '1' && input->flags[i] <= '9')

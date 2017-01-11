@@ -4,7 +4,10 @@ char	*ft_flagspace(char *str)
 {
 	char	*new;
 
-	new = ft_strjoin(" ", str);
+	if (ft_strcmp(str, ""))
+		new = ft_strjoin(" ", str);
+	else
+		new = ft_strdup(str);
 	ft_memdel((void **)&str);
 	return (new);
 }
@@ -16,11 +19,11 @@ char	*ft_flagpound(t_input *input, char *str)
 
 	if (ft_getconversion(input->form) == 'x')
 		prefix = ft_strdup("0x");
-	if (ft_getconversion(input->form) == 'X')
+	else if (ft_getconversion(input->form) == 'X')
 		prefix = ft_strdup("0X");
-	if (ft_getconversion(input->form) == 'o')
+	else if (ft_getconversion(input->form) == 'o')
 		prefix = ft_strdup("0");
-	if (ft_getconversion(input->form) == 'O')
+	else if (ft_getconversion(input->form) == 'O')
 		prefix = ft_strdup("0");
 	new = ft_strjoin(prefix, str);
 	if (new && ft_isupper(input->c))
@@ -50,6 +53,8 @@ char	*ft_flagwidth(t_input *input, char *str, int left)
 	i = 0;
 	offset = ft_strlen(str);
 	fill = ' ';
+	if (input->c == 'c' && !*str)
+		offset += 1;
 	if (!input->flagminus && input->flagzero)
 		fill = '0';
 	if (input->flagpound && ft_tolower(input->c) == 'x' && (input->flagminus || input->flagzero))
@@ -63,7 +68,7 @@ char	*ft_flagwidth(t_input *input, char *str, int left)
 		new = ft_strjoin(str, width);
 	else
 		new = ft_strjoin(width, str);
-	//Says free non malloc pointer?
-	//ft_memdel((void **)&str);
+	ft_memdel((void **)&width);
+	ft_memdel((void **)&str);
 	return (new);
 }

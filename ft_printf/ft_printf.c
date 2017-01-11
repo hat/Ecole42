@@ -93,6 +93,7 @@ int		ft_init(t_input *input)
 	}
 	else if (ft_strchr(input->form, '%'))
 		ft_percentsign(input);
+	ft_memdel((void **)&input->flags);
 	return (0);
 }
 
@@ -118,12 +119,17 @@ int		ft_printf(const char *format, ...)
 {
 	t_input	*input;
 	va_list	ap;
+	size_t	ret;
 
 	input = ft_init_tinput(format);
 	va_start(input->ap, format);
 	ft_init(input);
 	va_end(ap);
 	ft_putstr(input->str);
+	// if (ft_strlen(input->str))
+	// 	input->size = 0;
+	ret = ft_strlen(input->str) + input->size;
+	ft_memdel((void **)&input->str);
 	free(input);
-	return (ft_strlen(input->str));
+	return (ret);
 }

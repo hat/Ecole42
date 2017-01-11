@@ -12,17 +12,31 @@
 
 #include "ft_printf.h"
 
+//Need to call this before or after depending on when to add precision!
+
 char    *ft_checkprecision(t_input *input, char *str)
 {
   char *new;
+  char *fill;
   
-  if (input->precision != -1 && input->precision > (int)ft_strlen(str))
-    new = ft_strndup(str, input->precision);
-  else if (input->precision != -1 && input->c == 's')
-    new = ft_strndup(str, input->precision);
-  else if (input->precision == 0)
-    new = ft_strndup(str, input->precision);
+  //Check to make sure it's not anything but numbers rather than just not s
+  if (input->precision > (int)ft_strlen(str) && input->c != 's')
+  {
+    fill = ft_strnew(input->precision - ft_strlen(str));
+    ft_memset(fill, '0', input->precision - ft_strlen(str));
+    new = ft_strjoin(fill, str);
+    ft_memdel((void **)&fill);
+  }
   else
-    new = ft_strdup(str);
+  {
+    if (input->precision != -1 && input->c == 's')
+      new = ft_strndup(str, input->precision);
+    else if (input->precision == 0)
+      new = ft_strndup(str, input->precision);
+    else
+      new = ft_strdup(str);
+  }
+  //if input->c == s it has not been allocated!
+  //ft_memdel((void **)&str);
   return (new);
 }
