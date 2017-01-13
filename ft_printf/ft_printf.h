@@ -29,6 +29,7 @@ typedef struct 	s_read
 	char		c;
 	long long	size;
 	int 		width;
+	int 		negative;
 	int 		precision;
 	int 		flagplus;
 	int 		flagpound;
@@ -46,6 +47,11 @@ int 	ft_convers_f(t_input *input);
 int 	ft_convers_oO(t_input *input);
 int 	ft_convers_xX(t_input *input);
 /*
+** Declare digit negative functions
+*/
+char	*ft_deletenegative(t_input *input, char *str);
+char	*ft_addnegative(t_input *input, char *str);
+/*
 ** Declare char functions
 */
 int 	ft_convers_percent(t_input *input);
@@ -62,8 +68,8 @@ char	*ft_flagwidth(t_input *input, char *str, int left);
 /*
 ** Declare universal helper functions
 */
-int		ft_isflag(char c);
 int 	ft_isconversion(char c);
+int		ft_isflag(char c);
 char	ft_getconversion(char *str);
 long	ft_vartype(t_input *input);
 /*

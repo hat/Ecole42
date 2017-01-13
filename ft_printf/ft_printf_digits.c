@@ -15,14 +15,13 @@
 int		ft_convers_id(t_input *input)
 {
 	int		flag;
-	int		num;
+	long		num;
 	char	*numstr;
 
 	flag = 1;
 	flag += ft_getflags(input);
-	num = (int)input->var;
-	numstr = ft_itoa(num);
-	numstr = ft_checkprecision(input, numstr);
+	num = ft_vartype(input);
+	numstr = ft_itoa_base_long(num, 10);
 	ft_checkflags(input, numstr);
 	input->form = input->form + flag;
 	return (0);
@@ -36,11 +35,10 @@ int		ft_convers_uUD(t_input *input)
 
 	flag = 1;
 	flag += ft_getflags(input);
-	num = (int)input->var;
+	num = ft_vartype(input);
 	if (num < 0)
 		num += 4294967296;
 	numstr = ft_itoa_base_long(num, 10);
-	numstr = ft_checkprecision(input, numstr);
 	ft_checkflags(input, numstr);
 	input->form = input->form + flag;
 	return (0);
@@ -56,22 +54,19 @@ int		ft_convers_oO(t_input *input)
 {
 	int		i;
 	int		flag;
-	int		num;
+	long	num;
 	char	*numstr;
 
 	i = 0;
 	flag = 1;
 	flag += ft_getflags(input);
-	num = (int)input->var;
+	num = (long)input->var;
 	numstr = ft_itoa_base(num, 8);
-	numstr = ft_checkprecision(input, numstr);
 	ft_checkflags(input, numstr);
 	input->form += flag;
 	return (0);
 }
 
-
-//Separate function to determine type
 int		ft_convers_xX(t_input *input)
 {
 	int		flag;
@@ -82,7 +77,6 @@ int		ft_convers_xX(t_input *input)
 	flag += ft_getflags(input);
 	num = ft_vartype(input);
 	numstr = ft_itoa_base_long(num, 16);
-	numstr = ft_checkprecision(input, numstr);
 	ft_checkflags(input, numstr);
 	input->form += flag;
 	return (0);

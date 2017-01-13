@@ -1,5 +1,7 @@
 #include "ft_printf.h"
 
+//ONE OF THE MEM DELETES IN HERE WAS CAUSING ISSUES!!!
+
 char	*ft_flagspace(char *str)
 {
 	char	*new;
@@ -8,7 +10,7 @@ char	*ft_flagspace(char *str)
 		new = ft_strjoin(" ", str);
 	else
 		new = ft_strdup(str);
-	ft_memdel((void **)&str);
+	//ft_memdel((void **)&str);
 	return (new);
 }
 
@@ -17,9 +19,9 @@ char	*ft_flagpound(t_input *input, char *str)
 	char	*prefix;
 	char	*new;
 
-	if (ft_getconversion(input->form) == 'x')
+	if (ft_getconversion(input->form) == 'x' && input->precision != 0)
 		prefix = ft_strdup("0x");
-	else if (ft_getconversion(input->form) == 'X')
+	else if (ft_getconversion(input->form) == 'X' && input->precision != 0)
 		prefix = ft_strdup("0X");
 	else if (ft_getconversion(input->form) == 'o')
 		prefix = ft_strdup("0");
@@ -28,8 +30,8 @@ char	*ft_flagpound(t_input *input, char *str)
 	new = ft_strjoin(prefix, str);
 	if (new && ft_isupper(input->c))
 		ft_touppercase(new);
-	ft_memdel((void **)&prefix);
-	ft_memdel((void **)&str);
+	//ft_memdel((void **)&prefix);
+	//ft_memdel((void **)&str);
 	return (new);
 }
 
@@ -38,8 +40,24 @@ char	*ft_flagplus(char *str)
 	char	*new;
 
 	new = ft_strjoin("+", str);
-	ft_memdel((void **)&str);
+	//ft_memdel((void **)&str);
 	return (new);
+}
+
+int 	ft_widthoffset(t_input *input, char	*str)
+{
+	int 	offset;
+
+	offset = ft_strlen(str);
+	if (input->c == 'c' && !*str)
+		offset += 1;
+	if ((input->flagplus || input->negative) && str[0] != '-')
+		offset += 1;
+	if (input->flagpound && ft_tolower(input->c) == 'x' && (input->flagminus || input->flagzero))
+		offset += 2;
+	if (input->flagpound && ft_tolower(input->c) == 'o' && (input->flagminus || input->flagzero))
+		offset += 1;
+	return (offset);
 }
 
 char	*ft_flagwidth(t_input *input, char *str, int left)
@@ -51,16 +69,12 @@ char	*ft_flagwidth(t_input *input, char *str, int left)
 	char	*new;
 
 	i = 0;
-	offset = ft_strlen(str);
 	fill = ' ';
-	if (input->c == 'c' && !*str)
-		offset += 1;
 	if (!input->flagminus && input->flagzero)
 		fill = '0';
-	if (input->flagpound && ft_tolower(input->c) == 'x' && (input->flagminus || input->flagzero))
-		offset += 2;
-	if (input->flagpound && ft_tolower(input->c) == 'o' && (input->flagminus || input->flagzero))
-		offset += 1;
+	if (input->precision != -1 && input->flagzero && input->precision < input->width)
+		fill = ' ';
+	offset = ft_widthoffset(input, str);
 	width = ft_strnew(input->width);
 	if (input->width - offset > 0)
 		ft_memset(width, fill, input->width - offset);
@@ -68,7 +82,7 @@ char	*ft_flagwidth(t_input *input, char *str, int left)
 		new = ft_strjoin(str, width);
 	else
 		new = ft_strjoin(width, str);
-	ft_memdel((void **)&width);
-	ft_memdel((void **)&str);
+	//ft_memdel((void **)&width);
+	//ft_memdel((void **)&str);
 	return (new);
 }

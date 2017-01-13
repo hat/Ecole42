@@ -35,6 +35,8 @@ int		ft_convers_c(t_input *input)
 	c = ft_strnew(2);
 	c[0] = (int)input->var;
 	c[1] = '\0';
+	if (c[0] == 0)
+		input->size++;
 	flag += ft_getflags(input);
 	ft_checkflags(input, c);
 	input->form += flag;
@@ -51,7 +53,6 @@ int		ft_convers_s(t_input *input)
 	if (!str)
 		str = "(null)";
 	flag += ft_getflags(input);
-	str = ft_checkprecision(input, str);
 	ft_checkflags(input, str);
 	input->form += flag;
 	return (0);

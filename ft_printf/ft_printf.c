@@ -71,8 +71,8 @@ int		ft_percentsign(t_input *input)
 
 	prev = ft_strndup(input->form, (ft_strchr(input->form, '%') - input->form));
 	input->form = input->form + (ft_strchr(input->form, '%') - input->form);
-	//Needed to clear it all before running again!!!
 	ft_bzero(input->flags, ft_strlen(input->flags));
+	input->negative = 0;
 	if (!input->str)
 		input->str = ft_strdup(prev);
 	else
@@ -106,6 +106,7 @@ t_input	*ft_init_tinput(const char *format)
 	new->flags = ft_strnew(1);
 	new->str = NULL;
 	new->size = 0;
+	new->negative = 0;
 	new->flagplus = 0;
 	new->flagpound = 0;
 	new->flagspace = 0;
@@ -126,8 +127,6 @@ int		ft_printf(const char *format, ...)
 	ft_init(input);
 	va_end(ap);
 	ft_putstr(input->str);
-	// if (ft_strlen(input->str))
-	// 	input->size = 0;
 	ret = ft_strlen(input->str) + input->size;
 	ft_memdel((void **)&input->str);
 	free(input);

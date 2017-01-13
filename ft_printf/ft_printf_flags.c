@@ -62,13 +62,15 @@ char	*ft_callflags(t_input *input, char *str)
 {
 	if (input->flagminus)
 		str = ft_flagwidth(input, str, 1);
-	if (input->flagzero && !input->flagminus)
+	if (input->flagzero)
 		str = ft_flagwidth(input, str, 0);
 	if (input->flagpound)
 		str = ft_flagpound(input, str);
-	if (input->flagplus && ft_atoi(str) > 0)
+	if (input->flagplus && !input->negative)
 		str = ft_flagplus(str);
-	if (input->flagspace && ft_strlen(input->flags) == 1 && !input->flagminus)
+	if (input->negative)
+		str = ft_addnegative(input, str);
+	if (input->flagspace && ft_strlen(input->flags) == 1 && !input->flagminus && !input->negative && input->c != 'u')
 		str = ft_flagspace(str);
 	if (input->width && !input->flagminus)
 		str = ft_flagwidth(input, str, 0);
@@ -83,16 +85,16 @@ void	ft_checkflags(t_input *input, char *str)
 
 	i = 0;
 	numcheck = 0;
-	//Uncommenting gets other problems wrong but same amount
-	// if (!*str && input->precision == -1)
-	// 	input->size++;
+	if (str[0] == '-')
+		str = ft_deletenegative(input, str);
+	str = ft_checkprecision(input, str);
 	while (input->flags[i])
 	{
 		if (input->flags[i] >= '1' && input->flags[i] <= '9')
 			numcheck++;
 		if (input->flags[i] == '+')
 			input->flagplus++;
-		if (input->flags[i] == '#' && ft_strcmp(str, "0") && input->precision != 0)
+		if (input->flags[i] == '#' && ft_strcmp(str, "0"))
 			input->flagpound++;
 		if (input->flags[i] == '-')
 			input->flagminus++;
@@ -124,6 +126,6 @@ int		ft_getflags(t_input *input)
 		i++;
 	if (input->flags[i] == '.')
 		input->precision = ft_atoi_flags(&input->flags[i + 1]);
-	ft_memdel((void **)&c);
+	//ft_memdel((void **)&c);
 	return (ft_strlen(input->flags));
 }
