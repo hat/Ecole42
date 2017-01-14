@@ -6,16 +6,18 @@
 /*   By: thendric <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/02 11:48:42 by thendric          #+#    #+#             */
-/*   Updated: 2017/01/02 11:54:01 by thendric         ###   ########.fr       */
+/*   Updated: 2017/01/13 14:38:41 by thendric         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
+//WHOLE PROBLEM MAY LAY BEHIND NOT CLEARING OUT WHAT FLAGS ARE PRESENT AFTER SECOND RUN THROUGH OF ANOTHER VARIBALE!!!!!!!
 
 #include "ft_printf.h"
 
 int		ft_convers_id(t_input *input)
 {
 	int		flag;
-	long		num;
+	long	num;
 	char	*numstr;
 
 	flag = 1;
@@ -27,7 +29,7 @@ int		ft_convers_id(t_input *input)
 	return (0);
 }
 
-int		ft_convers_uUD(t_input *input)
+int		ft_convers_ud(t_input *input)
 {
 	int		flag;
 	long	num;
@@ -50,7 +52,7 @@ int		ft_convers_f(t_input *input)
 	return (0);
 }
 
-int		ft_convers_oO(t_input *input)
+int		ft_convers_o(t_input *input)
 {
 	int		i;
 	int		flag;
@@ -67,7 +69,7 @@ int		ft_convers_oO(t_input *input)
 	return (0);
 }
 
-int		ft_convers_xX(t_input *input)
+int		ft_convers_x(t_input *input)
 {
 	int		flag;
 	long	num;

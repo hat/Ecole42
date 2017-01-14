@@ -6,32 +6,11 @@
 /*   By: thendric <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/02 11:50:11 by thendric          #+#    #+#             */
-/*   Updated: 2017/01/02 11:54:52 by thendric         ###   ########.fr       */
+/*   Updated: 2017/01/13 14:46:31 by thendric         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_printf.h"
-
-long	ft_vartype(t_input *input)
-{
-	int 	i;
-	long	num;
-	int 	islong;
-
-	i = 0;
-	islong = 0;
-	while (input->flags[i])
-	{
-		if (input->flags[i] == 'l' || input->flags[i] == 'j')
-			islong++;
-		i++;
-	}
-	if (islong)
-		num = (long)input->var;
-	else
-		num = (int)input->var;
-	return (num);
-}
 
 int		ft_atoi_flags(const char *str)
 {
@@ -58,7 +37,7 @@ int		ft_atoi_flags(const char *str)
 	return (ans * neg);
 }
 
-char	*ft_callflags(t_input *input, char *str)
+void	ft_callflags(t_input *input, char *str)
 {
 	if (input->flagminus)
 		str = ft_flagwidth(input, str, 1);
@@ -66,22 +45,23 @@ char	*ft_callflags(t_input *input, char *str)
 		str = ft_flagwidth(input, str, 0);
 	if (input->flagpound)
 		str = ft_flagpound(input, str);
-	if (input->flagplus && !input->negative)
-		str = ft_flagplus(str);
+	if (input->flagplus && !input->negative && ft_tolower(input->c) != 'u')
+		str = ft_flagplus(input, str);
 	if (input->negative)
 		str = ft_addnegative(input, str);
-	if (input->flagspace && ft_strlen(input->flags) == 1 && !input->flagminus && !input->negative && input->c != 'u')
+	if (input->flagspace && ft_strlen(input->flags) == 1
+		&& !input->flagminus && !input->negative && input->c != 'u')
 		str = ft_flagspace(str);
 	if (input->width && !input->flagminus)
 		str = ft_flagwidth(input, str, 0);
-	input->str = ft_strjoin(input->str, str);
-	return (str);
+	if (str)
+		input->str = ft_strjoin(input->str, str);
 }
 
 void	ft_checkflags(t_input *input, char *str)
 {
 	int		i;
-	int 	numcheck;
+	int		numcheck;
 
 	i = 0;
 	numcheck = 0;
@@ -98,23 +78,27 @@ void	ft_checkflags(t_input *input, char *str)
 			input->flagpound++;
 		if (input->flags[i] == '-')
 			input->flagminus++;
-		if (input->flags[i] == ' ' && ft_strlen(input->flags) == 1 && str[0] != '-')
+		if (input->flags[i] == ' ' && ft_strlen(input->flags) == 1
+			&& str[0] != '-')
 			input->flagspace++;
 		if (input->flags[i] == '0' && !numcheck)
 			input->flagzero++;
 		i++;
 	}
-	str = ft_callflags(input, str);
+	ft_callflags(input, str);
 	if (input->c == 'X')
 		ft_touppercase(input->str);
 }
 
+//Need to update input->flags past the precision
 int		ft_getflags(t_input *input)
 {
 	int		i;
+	int		j;
 	char	*c;
 
 	i = 1;
+	j = 0;
 	c = ft_strdup(input->form + 1);
 	while (input->form[i] && !ft_isconversion(ft_tolower(input->form[i])))
 		i++;

@@ -6,7 +6,7 @@
 /*   By: thendric <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/02 11:47:45 by thendric          #+#    #+#             */
-/*   Updated: 2017/01/02 11:55:55 by thendric         ###   ########.fr       */
+/*   Updated: 2017/01/13 14:37:06 by thendric         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 int		ft_convers_percent(t_input *input)
 {
 	int		flag;
-	char 	*str;
+	char	*str;
 
 	flag = 1;
 	str = ft_strnew(1);

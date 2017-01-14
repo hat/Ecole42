@@ -1,6 +1,16 @@
-#include "ft_printf.h"
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   ft_printf_flagops.c                                :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: thendric <marvin@42.fr>                    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2017/01/13 14:39:18 by thendric          #+#    #+#             */
+/*   Updated: 2017/01/13 14:43:09 by thendric         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
-//ONE OF THE MEM DELETES IN HERE WAS CAUSING ISSUES!!!
+#include "ft_printf.h"
 
 char	*ft_flagspace(char *str)
 {
@@ -35,36 +45,39 @@ char	*ft_flagpound(t_input *input, char *str)
 	return (new);
 }
 
-char	*ft_flagplus(char *str)
+char	*ft_flagplus(t_input *input, char *str)
 {
 	char	*new;
 
 	new = ft_strjoin("+", str);
+	input->flagplus = 0;
 	//ft_memdel((void **)&str);
 	return (new);
 }
 
-int 	ft_widthoffset(t_input *input, char	*str)
+int		ft_widthoffset(t_input *input, char	*str)
 {
-	int 	offset;
+	int		offset;
 
 	offset = ft_strlen(str);
 	if (input->c == 'c' && !*str)
 		offset += 1;
 	if ((input->flagplus || input->negative) && str[0] != '-')
 		offset += 1;
-	if (input->flagpound && ft_tolower(input->c) == 'x' && (input->flagminus || input->flagzero))
+	if (input->flagpound && ft_tolower(input->c) == 'x'
+		&& (input->flagminus || input->flagzero))
 		offset += 2;
-	if (input->flagpound && ft_tolower(input->c) == 'o' && (input->flagminus || input->flagzero))
+	if (input->flagpound && ft_tolower(input->c) == 'o'
+		&& (input->flagminus || input->flagzero))
 		offset += 1;
 	return (offset);
 }
 
 char	*ft_flagwidth(t_input *input, char *str, int left)
 {
-	int 	i;
-	int 	offset;
-	char 	fill;
+	int		i;
+	int		offset;
+	char	fill;
 	char	*width;
 	char	*new;
 
@@ -72,7 +85,8 @@ char	*ft_flagwidth(t_input *input, char *str, int left)
 	fill = ' ';
 	if (!input->flagminus && input->flagzero)
 		fill = '0';
-	if (input->precision != -1 && input->flagzero && input->precision < input->width)
+	if (input->precision != -1 && input->flagzero
+		&& input->precision < input->width)
 		fill = ' ';
 	offset = ft_widthoffset(input, str);
 	width = ft_strnew(input->width);

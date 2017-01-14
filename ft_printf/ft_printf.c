@@ -26,11 +26,11 @@ int		ft_pickconvers(t_input *input)
 	if (input->c == '%')
 		ft_convers_percent(input);
 	if (input->c == 'o' || input->c == 'O')
-		ft_convers_oO(input);
+		ft_convers_o(input);
 	if (input->c == 'x' || input->c == 'X')
-		ft_convers_xX(input);
+		ft_convers_x(input);
 	if (input->c == 'u' || input->c == 'U' || input->c == 'D')
-		ft_convers_uUD(input);
+		ft_convers_ud(input);
 	if (input->c == 'p')
 		ft_convers_p(input);
 	return (0);
@@ -80,40 +80,6 @@ int		ft_percentsign(t_input *input)
 	ft_memdel((void **)&prev);
 	ft_findconvers(input);
 	return (0);
-}
-
-int		ft_init(t_input *input)
-{
-	if (!(ft_strchr(input->form, '%')))
-	{
-		if (!input->str)
-			input->str = ft_strdup(input->form);
-		else
-			input->str = ft_strjoin(input->str, input->form);
-	}
-	else if (ft_strchr(input->form, '%'))
-		ft_percentsign(input);
-	ft_memdel((void **)&input->flags);
-	return (0);
-}
-
-t_input	*ft_init_tinput(const char *format)
-{
-	t_input	*new;
-
-	new = (t_input *)malloc(sizeof(t_input));
-	new->form = ft_strdup((char *)format);
-	new->flags = ft_strnew(1);
-	new->str = NULL;
-	new->size = 0;
-	new->negative = 0;
-	new->flagplus = 0;
-	new->flagpound = 0;
-	new->flagspace = 0;
-	new->flagminus = 0;
-	new->flagzero = 0;
-	new->precision = -1;
-	return (new);
 }
 
 int		ft_printf(const char *format, ...)
