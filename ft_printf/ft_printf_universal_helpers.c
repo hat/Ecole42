@@ -12,6 +12,39 @@
 
 #include "ft_printf.h"
 
+unsigned long 	ft_vartype_u(t_input *input)
+{
+	int 			i;
+	unsigned int 	num_ui;
+	unsigned long 	num_ul;
+	int				is_l;
+	int				is_h;
+	int				is_z;
+
+	i = 0;
+	is_l = 0;
+	is_h = 0;
+	is_z = 0;
+	while (input->flags[i])
+	{
+		if (input->flags[i] == 'l' || input->flags[i] == 'j')
+			is_l++;
+		if (input->flags[i] == 'h')
+			is_h++;
+		if (input->flags[i] == 'z')
+			is_z++;
+		i++;
+	}
+	if (is_l || is_h || is_z || input->c == 'U')
+	{
+		num_ul = (unsigned long)input->var;
+		return (num_ul);
+	}
+	else
+		num_ui = (unsigned int)input->var;
+	return (num_ui);
+}
+
 long	ft_vartype(t_input *input)
 {
 	int				i;
@@ -20,31 +53,25 @@ long	ft_vartype(t_input *input)
 	short			num_short;
 	signed char		char_signed;
 	ssize_t			num_sizet;
-	unsigned long	num_unsignl;
-	int				islong;
+	int				is_l;
 	int				is_h;
 	int				is_z;
 
 	i = 0;
-	islong = 0;
+	is_l = 0;
 	is_h = 0;
 	is_z = 0;
 	while (input->flags[i])
 	{
 		if (input->flags[i] == 'l' || input->flags[i] == 'j')
-			islong++;
+			is_l++;
 		if (input->flags[i] == 'h')
 			is_h++;
 		if (input->flags[i] == 'z')
 			is_z++;
 		i++;
 	}
-	if (input->c == 'u' || input->c == 'U')
-	{
-		num_unsignl = (unsigned long)input->var;
-		return (num_unsignl);
-	}
-	if (islong)
+	if (is_l)
 	{
 		num_long = (long)input->var;
 		return (num_long);

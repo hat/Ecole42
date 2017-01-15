@@ -23,7 +23,7 @@ int		ft_init(t_input *input)
 	}
 	else if (ft_strchr(input->form, '%'))
 		ft_percentsign(input);
-	ft_memdel((void **)&input->flags);
+	ft_strdel(&input->flags);
 	return (0);
 }
 

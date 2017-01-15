@@ -20,7 +20,7 @@ char	*ft_flagspace(char *str)
 		new = ft_strjoin(" ", str);
 	else
 		new = ft_strdup(str);
-	//ft_memdel((void **)&str);
+	ft_strdel(&str);
 	return (new);
 }
 
@@ -29,6 +29,7 @@ char	*ft_flagpound(t_input *input, char *str)
 	char	*prefix;
 	char	*new;
 
+	prefix = ft_strnew(2);
 	if (ft_getconversion(input->form) == 'x' && input->precision != 0)
 		prefix = ft_strdup("0x");
 	else if (ft_getconversion(input->form) == 'X' && input->precision != 0)
@@ -40,8 +41,8 @@ char	*ft_flagpound(t_input *input, char *str)
 	new = ft_strjoin(prefix, str);
 	if (new && ft_isupper(input->c))
 		ft_touppercase(new);
-	//ft_memdel((void **)&prefix);
-	//ft_memdel((void **)&str);
+	ft_strdel(&prefix);
+	ft_strdel(&str);
 	return (new);
 }
 
@@ -51,7 +52,7 @@ char	*ft_flagplus(t_input *input, char *str)
 
 	new = ft_strjoin("+", str);
 	input->flagplus = 0;
-	//ft_memdel((void **)&str);
+	ft_strdel(&str);
 	return (new);
 }
 
@@ -96,7 +97,7 @@ char	*ft_flagwidth(t_input *input, char *str, int left)
 		new = ft_strjoin(str, width);
 	else
 		new = ft_strjoin(width, str);
-	//ft_memdel((void **)&width);
-	//ft_memdel((void **)&str);
+	ft_strdel(&width);
+	//ft_strdel(&str);
 	return (new);
 }

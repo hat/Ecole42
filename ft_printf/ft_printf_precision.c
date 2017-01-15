@@ -12,6 +12,7 @@
 
 #include "ft_printf.h"
 
+//CAN'T RETURN A NULL STRING!!!
 char	*ft_checkprecision(t_input *input, char *str)
 {
 	char	*new;
@@ -22,17 +23,20 @@ char	*ft_checkprecision(t_input *input, char *str)
 		fill = ft_strnew(input->precision - ft_strlen(str));
 		ft_memset(fill, '0', input->precision - ft_strlen(str));
 		new = ft_strjoin(fill, str);
-		//ft_memdel((void **)&fill);
+		ft_strdel(&fill);
 	}
 	else
 	{
 		if (input->precision != -1 && input->c == 's')
 			new = ft_strndup(str, input->precision);
 		else if (input->precision == 0 && input->c != '%' && ft_atoi(str) == 0)
-			new = ft_strndup(str, input->precision);
+		{
+			new = ft_strnew(1);
+			new = ft_strdup("");
+		}
 		else
 			new = ft_strdup(str);
 	}
-	//ft_memdel((void **)&str);
+	//ft_strdel(&str);
 	return (new);
 }

@@ -40,7 +40,7 @@ typedef struct	s_read
 ** Declare digit functions
 */
 int				ft_convers_id(t_input *input);
-int				ft_convers_ud(t_input *input);
+int				ft_convers_u(t_input *input);
 int				ft_convers_f(t_input *input);
 int				ft_convers_o(t_input *input);
 int				ft_convers_x(t_input *input);
@@ -70,6 +70,7 @@ int				ft_isconversion(char c);
 int				ft_isflag(char c);
 char			ft_getconversion(char *str);
 long			ft_vartype(t_input *input);
+unsigned long	ft_vartype_u(t_input *input);
 /*
 ** Declare functionality functions
 */

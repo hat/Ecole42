@@ -70,7 +70,7 @@ void	ft_checkflags(t_input *input, char *str)
 	str = ft_checkprecision(input, str);
 	while (input->flags[i])
 	{
-		if (input->flags[i] >= '1' && input->flags[i] <= '9')
+		if ((input->flags[i] >= '1' && input->flags[i] <= '9') || input->flags[i] == '.')
 			numcheck++;
 		if (input->flags[i] == '+')
 			input->flagplus++;
@@ -90,7 +90,6 @@ void	ft_checkflags(t_input *input, char *str)
 		ft_touppercase(input->str);
 }
 
-//Need to update input->flags past the precision
 int		ft_getflags(t_input *input)
 {
 	int		i;
@@ -110,6 +109,6 @@ int		ft_getflags(t_input *input)
 		i++;
 	if (input->flags[i] == '.')
 		input->precision = ft_atoi_flags(&input->flags[i + 1]);
-	//ft_memdel((void **)&c);
+	ft_strdel(&c);
 	return (ft_strlen(input->flags));
 }
