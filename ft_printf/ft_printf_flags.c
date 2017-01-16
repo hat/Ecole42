@@ -94,21 +94,42 @@ int		ft_getflags(t_input *input)
 {
 	int		i;
 	int		j;
+	int 	wildflag;
 	char	*c;
 
 	i = 1;
 	j = 0;
+	wildflag = 0;
 	c = ft_strdup(input->form + 1);
 	while (input->form[i] && !ft_isconversion(ft_tolower(input->form[i])))
+	{
+		if (input->form[i] == '*')
+			wildflag++;
 		i++;
+	}
 	c[i - 1] = '\0';
 	input->flags = ft_strjoin(input->flags, c);
-	input->width = ft_atoi_flags(input->flags);
+	if (wildflag)
+	{
+		input->width = (int)input->var;
+		input->var = va_arg(input->ap, void *);
+	}
+	else
+		input->width = ft_atoi_flags(input->flags);
 	i = 0;
 	while (input->flags[i] && input->flags[i] != '.')
 		i++;
 	if (input->flags[i] == '.')
-		input->precision = ft_atoi_flags(&input->flags[i + 1]);
+	{
+		if (wildflag == 2)
+		{
+			input->precision = (int)input->var;
+			input->var = va_arg(input->ap, void *);
+		}
+		else
+			input->precision = ft_atoi_flags(&input->flags[i + 1]);
+	}
+	//printf("Width: %d Precision: %d\n", input->width, input->precision);
 	ft_strdel(&c);
 	return (ft_strlen(input->flags));
 }

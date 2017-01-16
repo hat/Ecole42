@@ -56,6 +56,8 @@ int				ft_convers_percent(t_input *input);
 int				ft_convers_c(t_input *input);
 int				ft_convers_s(t_input *input);
 int				ft_convers_p(t_input *input);
+int 			ft_convers_wc(t_input *input);
+int 			ft_convers_ws(t_input *input);
 /*
 ** Declare flag operation functions
 */

@@ -76,13 +76,11 @@ int		ft_widthoffset(t_input *input, char	*str)
 
 char	*ft_flagwidth(t_input *input, char *str, int left)
 {
-	int		i;
 	int		offset;
 	char	fill;
-	char	*width;
+	char	*addon;
 	char	*new;
 
-	i = 0;
 	fill = ' ';
 	if (!input->flagminus && input->flagzero)
 		fill = '0';
@@ -90,14 +88,14 @@ char	*ft_flagwidth(t_input *input, char *str, int left)
 		&& input->precision < input->width)
 		fill = ' ';
 	offset = ft_widthoffset(input, str);
-	width = ft_strnew(input->width);
+	addon = ft_memalloc(input->width);
 	if (input->width - offset > 0)
-		ft_memset(width, fill, input->width - offset);
+		ft_memset(addon, fill, input->width - offset);
 	if (left)
-		new = ft_strjoin(str, width);
+		new = ft_strjoin(str, addon);
 	else
-		new = ft_strjoin(width, str);
-	ft_strdel(&width);
+		new = ft_strjoin(addon, str);
+	ft_strdel(&addon);
 	//ft_strdel(&str);
 	return (new);
 }

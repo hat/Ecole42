@@ -31,10 +31,12 @@ t_input	*ft_init_tinput(const char *format)
 {
 	t_input	*new;
 
-	new = (t_input *)malloc(sizeof(t_input));
+	new = (t_input *)ft_memalloc(sizeof(t_input));
 	new->form = ft_strdup((char *)format);
 	new->flags = ft_strnew(1);
+	//FT_MEMALLOC WIDTH HERE
 	new->str = NULL;
+	//REMOVE IF FT_MEMALLOC
 	new->size = 0;
 	new->negative = 0;
 	new->flagplus = 0;

@@ -19,8 +19,12 @@ int		ft_pickconvers(t_input *input)
 		ft_convers_id(input);
 	if (input->c == 's')
 		ft_convers_s(input);
-	if (input->c == 'c' || input->c == 'C')
+	if (input->c == 'c')
 		ft_convers_c(input);
+	if (input->c == 'C')
+		ft_convers_wc(input);
+	if (input->c == 'S')
+		ft_convers_ws(input);
 	if (input->c == 'f')
 		ft_convers_f(input);
 	if (input->c == '%')
