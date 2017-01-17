@@ -17,7 +17,7 @@ char	*ft_addnegative(t_input *input, char *str)
 	char	*new;
 
 	input->negative = input->negative;
-	new = ft_strnew(ft_strlen(str) + 1);
+	new = NULL;
 	new++;
 	new = ft_strdup(str);
 	new--;
@@ -31,7 +31,7 @@ char	*ft_deletenegative(t_input *input, char *str)
 	char	*new;
 
 	input->negative = 1;
-	new = ft_strnew(ft_strlen(str - 1));
+	new = NULL;
 	new = ft_strdup(str + 1);
 	ft_strdel(&str);
 	return (new);

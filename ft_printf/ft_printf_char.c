@@ -61,14 +61,14 @@ int		ft_convers_s(t_input *input)
 int		ft_convers_p(t_input *input)
 {
 	int		flag;
-	int		num;
+	long	num;
 	char	*numstr;
 
 	flag = 1;
-	num = (int)input->var;
-	numstr = ft_itoa_base(num, 16);
+	num = (long)input->var;
+	numstr = ft_itoa_base_long(num, 16);
 	flag += ft_getflags(input);
-	numstr = ft_strjoin("0x10", numstr);
+	numstr = ft_strjoin("0x", numstr);
 	ft_checkflags(input, numstr);
 	input->form += flag;
 	return (0);

@@ -37,32 +37,33 @@ int		ft_pickconvers(t_input *input)
 		ft_convers_u(input);
 	if (input->c == 'p')
 		ft_convers_p(input);
+
 	return (0);
 }
 
+//NEED CHECK FOR INVALID CONVERSION SPECIFIER
 int		ft_findconvers(t_input *input)
 {
 	int		i;
-	int		is_space;
+	int 	foundconvers;
 	char	c;
 
-	i = 0;
-	is_space = 0;
-	if (input->form[0] == ' ')
-	{
-		is_space = 1;
-		i++;
-	}
-	while (input->form[i])
+	i = -1;
+	foundconvers = 0;
+	while (input->form[++i] && !foundconvers)
 	{
 		c = input->form[i + 1];
 		if (ft_isconversion(c))
 		{
 			input->c = c;
 			ft_pickconvers(input);
-			break ;
+			foundconvers++;
 		}
-		i++;
+	}
+	if (!foundconvers)
+	{
+		ft_bzero(input->str, ft_strlen(input->str));
+		return (0);
 	}
 	input->form = input->form + 1;
 	ft_init(input);
@@ -111,7 +112,8 @@ int		ft_printf(const char *format, ...)
 	va_start(input->ap, format);
 	ft_init(input);
 	va_end(ap);
-	ft_putstr(input->str);
+	if (input->str)
+		ft_putstr(input->str);
 	ret = ft_strlen(input->str) + input->size;
 	ft_memdel((void **)&input->str);
 	free(input);

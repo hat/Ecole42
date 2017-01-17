@@ -39,6 +39,7 @@ int		ft_convers_u(t_input *input)
 	flag += ft_getflags(input);
 	num = ft_vartype_u(input);
 	numstr = ft_itoa_base_long(num, 10);
+	//Problem exists above!
 	ft_checkflags(input, numstr);
 	input->form = input->form + flag;
 	return (0);

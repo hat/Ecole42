@@ -71,7 +71,7 @@ long	ft_vartype(t_input *input)
 			is_z++;
 		i++;
 	}
-	if (is_l)
+	if (is_l || input->c == 'D')
 	{
 		num_long = (long)input->var;
 		return (num_long);

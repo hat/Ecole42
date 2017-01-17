@@ -67,7 +67,8 @@ void	ft_checkflags(t_input *input, char *str)
 	numcheck = 0;
 	if (str[0] == '-')
 		str = ft_deletenegative(input, str);
-	str = ft_checkprecision(input, str);
+	if (input->c != '%')
+		str = ft_checkprecision(input, str);
 	while (input->flags[i])
 	{
 		if ((input->flags[i] >= '1' && input->flags[i] <= '9') || input->flags[i] == '.')
