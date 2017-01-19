@@ -63,6 +63,8 @@ long	ft_vartype(t_input *input)
 	is_z = 0;
 	while (input->flags[i])
 	{
+		if (input->flags[i] == 'l' || input->flags[i] == 'j' || input->flags[i] == 'z')
+			input->islong++;
 		if (input->flags[i] == 'l' || input->flags[i] == 'j')
 			is_l++;
 		if (input->flags[i] == 'h')
@@ -124,7 +126,7 @@ int		ft_isconversion(char c)
 	if (c == 'd' || c == 'i' || c == 's' || c == 'c'
 			|| c == '%' || c == 'f' || c == 'o' || c == 'x'
 			|| c == 'u' || c == 'O' || c == 'X' || c == 'p'
-			|| c == 'U' || c == 'D' || c == 'C')
+			|| c == 'U' || c == 'D' || c == 'C' || c == 'S')
 	{
 		return (1);
 	}

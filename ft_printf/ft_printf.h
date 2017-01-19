@@ -15,6 +15,7 @@
 
 # include <stdio.h>
 # include <stdarg.h>
+#include <wchar.h>
 # include "libft.h"
 
 typedef struct	s_read
@@ -34,6 +35,7 @@ typedef struct	s_read
 	int			flagspace;
 	int			flagminus;
 	int			flagzero;
+	int 		islong;
 }				t_input;
 
 /*

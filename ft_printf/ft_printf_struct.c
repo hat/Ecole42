@@ -18,12 +18,12 @@ int		ft_init(t_input *input)
 	{
 		if (!input->str)
 			input->str = ft_strdup(input->form);
-		else
+		else if (*input->form)
 			input->str = ft_strjoin(input->str, input->form);
 	}
-	else if (ft_strchr(input->form, '%'))
+	else
 		ft_percentsign(input);
-	ft_strdel(&input->flags);
+	//ft_strdel(&input->form);
 	return (0);
 }
 
@@ -45,5 +45,6 @@ t_input	*ft_init_tinput(const char *format)
 	new->flagminus = 0;
 	new->flagzero = 0;
 	new->precision = -1;
+	new->islong = 0;
 	return (new);
 }

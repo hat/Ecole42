@@ -54,6 +54,8 @@ void	ft_callflags(t_input *input, char *str)
 		str = ft_flagspace(str);
 	if (input->width && !input->flagminus)
 		str = ft_flagwidth(input, str, 0);
+	if (input->c == 'X')
+		ft_touppercase(str);
 	if (str)
 		input->str = ft_strjoin(input->str, str);
 }
@@ -73,7 +75,7 @@ void	ft_checkflags(t_input *input, char *str)
 	{
 		if ((input->flags[i] >= '1' && input->flags[i] <= '9') || input->flags[i] == '.')
 			numcheck++;
-		if (input->flags[i] == '+')
+		if (input->flags[i] == '+' && ft_tolower(input->c) != 'c')
 			input->flagplus++;
 		if (input->flags[i] == '#' && ft_strcmp(str, "0"))
 			input->flagpound++;
@@ -87,8 +89,6 @@ void	ft_checkflags(t_input *input, char *str)
 		i++;
 	}
 	ft_callflags(input, str);
-	if (input->c == 'X')
-		ft_touppercase(input->str);
 }
 
 int		ft_getflags(t_input *input)

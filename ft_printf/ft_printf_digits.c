@@ -38,7 +38,7 @@ int		ft_convers_u(t_input *input)
 	flag = 1;
 	flag += ft_getflags(input);
 	num = ft_vartype_u(input);
-	numstr = ft_itoa_base_long(num, 10);
+	numstr = ft_itoa_base_unsign(num, 10);
 	//Problem exists above!
 	ft_checkflags(input, numstr);
 	input->form = input->form + flag;
@@ -61,8 +61,8 @@ int		ft_convers_o(t_input *input)
 	i = 0;
 	flag = 1;
 	flag += ft_getflags(input);
-	num = (long)input->var;
-	numstr = ft_itoa_base(num, 8);
+	num = ft_vartype(input);
+	numstr = ft_itoa_base_unsign(num, 8);
 	ft_checkflags(input, numstr);
 	input->form += flag;
 	return (0);
@@ -77,7 +77,10 @@ int		ft_convers_x(t_input *input)
 	flag = 1;
 	flag += ft_getflags(input);
 	num = ft_vartype(input);
-	numstr = ft_itoa_base_long(num, 16);
+	if (input->islong)
+		numstr = ft_itoa_base_unsign(num, 16);
+	else
+		numstr = ft_itoa_base_long(num, 16);
 	ft_checkflags(input, numstr);
 	input->form += flag;
 	return (0);
