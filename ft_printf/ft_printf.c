@@ -14,7 +14,8 @@
 
 int		ft_pickconvers(t_input *input)
 {
-	input->var = va_arg(input->ap, void *);
+	if (input->c != '%')
+		input->var = va_arg(input->ap, void *);
 	if (input->c == 'i' || input->c == 'd' || input->c == 'D')
 		ft_convers_id(input);
 	if (input->c == 's')
@@ -87,6 +88,7 @@ void	ft_resetflags(t_input *input)
 }
 
 //if %C is - running strdup rather than strjoin...
+//Possible that '-' = 0???
 int		ft_percentsign(t_input *input)
 {
 	char	*prev;
