@@ -6,7 +6,7 @@
 /*   By: thendric <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/02 11:50:11 by thendric          #+#    #+#             */
-/*   Updated: 2017/01/13 14:46:31 by thendric         ###   ########.fr       */
+/*   Updated: 2017/01/19 12:41:16 by thendric         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,15 +65,16 @@ void	ft_checkflags(t_input *input, char *str)
 	int		i;
 	int		numcheck;
 
-	i = 0;
+	i = -1;
 	numcheck = 0;
 	if (str[0] == '-')
 		str = ft_deletenegative(input, str);
 	if (input->c != '%')
 		str = ft_checkprecision(input, str);
-	while (input->flags[i])
+	while (input->flags[++i])
 	{
-		if ((input->flags[i] >= '1' && input->flags[i] <= '9') || input->flags[i] == '.')
+		if ((input->flags[i] >= '1' && input->flags[i] <= '9')
+			|| input->flags[i] == '.')
 			numcheck++;
 		if (input->flags[i] == '+' && ft_tolower(input->c) != 'c')
 			input->flagplus++;
@@ -86,20 +87,36 @@ void	ft_checkflags(t_input *input, char *str)
 			input->flagspace++;
 		if (input->flags[i] == '0' && !numcheck)
 			input->flagzero++;
-		i++;
 	}
 	ft_callflags(input, str);
+}
+
+void	ft_getflagprecision(t_input *input, int wild)
+{
+	int		i;
+
+	i = 0;
+	while (input->flags[i] && input->flags[i] != '.')
+		i++;
+	if (input->flags[i] == '.')
+	{
+		if (wild == 2)
+		{
+			input->precision = (int)input->var;
+			input->var = va_arg(input->ap, void *);
+		}
+		else
+			input->precision = ft_atoi_flags(&input->flags[i + 1]);
+	}
 }
 
 int		ft_getflags(t_input *input)
 {
 	int		i;
-	int		j;
-	int 	wildflag;
+	int		wildflag;
 	char	*c;
 
 	i = 1;
-	j = 0;
 	wildflag = 0;
 	c = ft_strdup(input->form + 1);
 	while (input->form[i] && !ft_isconversion(ft_tolower(input->form[i])))
@@ -117,20 +134,7 @@ int		ft_getflags(t_input *input)
 	}
 	else
 		input->width = ft_atoi_flags(input->flags);
-	i = 0;
-	while (input->flags[i] && input->flags[i] != '.')
-		i++;
-	if (input->flags[i] == '.')
-	{
-		if (wildflag == 2)
-		{
-			input->precision = (int)input->var;
-			input->var = va_arg(input->ap, void *);
-		}
-		else
-			input->precision = ft_atoi_flags(&input->flags[i + 1]);
-	}
-	//printf("Width: %d Precision: %d\n", input->width, input->precision);
+	ft_getflagprecision(input, wildflag);
 	ft_strdel(&c);
 	return (ft_strlen(input->flags));
 }

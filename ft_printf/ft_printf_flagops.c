@@ -6,7 +6,7 @@
 /*   By: thendric <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/13 14:39:18 by thendric          #+#    #+#             */
-/*   Updated: 2017/01/13 14:43:09 by thendric         ###   ########.fr       */
+/*   Updated: 2017/01/19 12:43:09 by thendric         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,7 +56,7 @@ char	*ft_flagplus(t_input *input, char *str)
 	return (new);
 }
 
-int		ft_widthoffset(t_input *input, char	*str)
+int		ft_widthoffset(t_input *input, char *str)
 {
 	int		offset;
 
@@ -96,6 +96,5 @@ char	*ft_flagwidth(t_input *input, char *str, int left)
 	else
 		new = ft_strjoin(addon, str);
 	ft_strdel(&addon);
-	//ft_strdel(&str);
 	return (new);
 }

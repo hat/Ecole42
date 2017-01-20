@@ -6,19 +6,19 @@
 /*   By: thendric <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/13 15:02:08 by thendric          #+#    #+#             */
-/*   Updated: 2017/01/13 15:02:17 by thendric         ###   ########.fr       */
+/*   Updated: 2017/01/19 12:50:24 by thendric         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_printf.h"
 
-//CAN'T RETURN A NULL STRING!!!
 char	*ft_checkprecision(t_input *input, char *str)
 {
 	char	*new;
 	char	*fill;
 
-	if (input->precision > (int)ft_strlen(str) && input->c != 's' && input->c != 'c')
+	if (input->precision > (int)ft_strlen(str) && ft_tolower(input->c) != 's'
+		&& ft_tolower(input->c) != 'c')
 	{
 		fill = ft_strnew(input->precision - ft_strlen(str));
 		ft_memset(fill, '0', input->precision - ft_strlen(str));
@@ -37,6 +37,5 @@ char	*ft_checkprecision(t_input *input, char *str)
 		else
 			new = ft_strdup(str);
 	}
-	//ft_strdel(&str);
 	return (new);
 }

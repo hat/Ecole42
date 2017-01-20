@@ -6,7 +6,7 @@
 /*   By: thendric <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/02 11:51:30 by thendric          #+#    #+#             */
-/*   Updated: 2017/01/13 15:05:59 by thendric         ###   ########.fr       */
+/*   Updated: 2017/01/19 12:46:56 by thendric         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,9 +14,9 @@
 
 unsigned long 	ft_vartype_u(t_input *input)
 {
-	int 			i;
-	unsigned int 	num_ui;
-	unsigned long 	num_ul;
+	int				i;
+	unsigned int	num_ui;
+	unsigned long	num_ul;
 	int				is_l;
 	int				is_h;
 	int				is_z;

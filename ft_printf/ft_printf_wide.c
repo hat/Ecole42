@@ -6,15 +6,15 @@
 /*   By: thendric <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/02 11:47:45 by thendric          #+#    #+#             */
-/*   Updated: 2017/01/13 14:37:06 by thendric         ###   ########.fr       */
+/*   Updated: 2017/01/19 12:48:31 by thendric         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_printf.h"
 
-char 	*ft_wctos(wint_t c)
+char	*ft_wctos(wint_t c)
 {
-	char 	*str;
+	char	*str;
 
 	str = ft_strnew(4);
 	if (c <= 0x7F)
@@ -40,33 +40,30 @@ char 	*ft_wctos(wint_t c)
 	return (str);
 }
 
-int 		ft_convers_wc(t_input *input)
+int		ft_convers_wc(t_input *input)
 {
-	int 		flag;
-	char 		*str;
-	wint_t		c;
+	int		flag;
+	char	*str;
+	wint_t	c;
 
 	flag = 1;
-	str = ft_strnew(1);
+	str = NULL;
 	c = (wint_t)input->var;
-	if (!c)
-		str = ft_strdup("(null)");
-	else
-		str = ft_wctos(c);
+	str = ft_wctos(c);
 	flag += ft_getflags(input);
 	ft_checkflags(input, str);
 	input->form += flag;
-	ft_strdel(&str);
+	//ft_strdel(&str);
 	return (0);
 }
 
-int 		ft_convers_ws(t_input *input)
+int		ft_convers_ws(t_input *input)
 {
-	int 		flag;
-	char 		*str;
-	wchar_t 	*instr;
-	wint_t		c;
-	int 		i;
+	int		flag;
+	char	*str;
+	wchar_t	*instr;
+	wint_t	c;
+	int		i;
 
 	flag = 1;
 	i = -1;

@@ -6,7 +6,7 @@
 /*   By: thendric <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/02 11:46:55 by thendric          #+#    #+#             */
-/*   Updated: 2017/01/13 14:36:24 by thendric         ###   ########.fr       */
+/*   Updated: 2017/01/19 12:49:31 by thendric         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 
 # include <stdio.h>
 # include <stdarg.h>
-#include <wchar.h>
+# include <wchar.h>
 # include "libft.h"
 
 typedef struct	s_read
@@ -35,7 +35,7 @@ typedef struct	s_read
 	int			flagspace;
 	int			flagminus;
 	int			flagzero;
-	int 		islong;
+	int			islong;
 }				t_input;
 
 /*
@@ -58,8 +58,8 @@ int				ft_convers_percent(t_input *input);
 int				ft_convers_c(t_input *input);
 int				ft_convers_s(t_input *input);
 int				ft_convers_p(t_input *input);
-int 			ft_convers_wc(t_input *input);
-int 			ft_convers_ws(t_input *input);
+int				ft_convers_wc(t_input *input);
+int				ft_convers_ws(t_input *input);
 /*
 ** Declare flag operation functions
 */
@@ -82,6 +82,7 @@ char			*ft_checkprecision(t_input *input, char *str);
 void			ft_add_width(t_input *input, size_t var_size, char *str);
 void			ft_checkflags(t_input *input, char *str);
 int				ft_getflags(t_input *input);
+void			ft_getflagprecision(t_input *input, int wild);
 int				ft_init(t_input *input);
 int				ft_printf(const char *format, ...);
 /*

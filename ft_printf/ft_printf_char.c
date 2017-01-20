@@ -6,7 +6,7 @@
 /*   By: thendric <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/02 11:47:45 by thendric          #+#    #+#             */
-/*   Updated: 2017/01/13 14:37:06 by thendric         ###   ########.fr       */
+/*   Updated: 2017/01/19 12:41:55 by thendric         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,7 @@ int		ft_convers_percent(t_input *input)
 	flag += ft_getflags(input);
 	ft_checkflags(input, str);
 	input->form = input->form + flag;
+	ft_strdel(&str);
 	return (0);
 }
 
@@ -47,14 +48,18 @@ int		ft_convers_s(t_input *input)
 {
 	int		flag;
 	char	*str;
+	char	*temp;
 
 	flag = 1;
-	str = (char *)input->var;
-	if (!str)
-		str = "(null)";
+	temp = (char *)input->var;
+	if (!temp)
+		str = ft_strdup("(null)");
+	else
+		str = ft_strdup(temp);
 	flag += ft_getflags(input);
 	ft_checkflags(input, str);
 	input->form += flag;
+	ft_strdel(&str);
 	return (0);
 }
 
@@ -71,5 +76,6 @@ int		ft_convers_p(t_input *input)
 	numstr = ft_strjoin("0x", numstr);
 	ft_checkflags(input, numstr);
 	input->form += flag;
+	ft_strdel(&numstr);
 	return (0);
 }

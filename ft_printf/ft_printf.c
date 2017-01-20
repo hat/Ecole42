@@ -6,7 +6,7 @@
 /*   By: thendric <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/02 11:45:00 by thendric          #+#    #+#             */
-/*   Updated: 2017/01/02 11:55:34 by thendric         ###   ########.fr       */
+/*   Updated: 2017/01/19 12:28:03 by thendric         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,11 +41,10 @@ int		ft_pickconvers(t_input *input)
 	return (0);
 }
 
-//NEED CHECK FOR INVALID CONVERSION SPECIFIER
 int		ft_findconvers(t_input *input)
 {
 	int		i;
-	int 	foundconvers;
+	int		foundconvers;
 	char	c;
 
 	i = -1;
@@ -60,12 +59,6 @@ int		ft_findconvers(t_input *input)
 			foundconvers++;
 		}
 	}
-	// if (!foundconvers)
-	// {
-	//	RUN THROUGH MOCK CONVERSION AND ONLY GRAB WRONG CONV
-	// 	ft_bzero(input->str, ft_strlen(input->str));
-	// 	return (0);
-	// }
 	input->form = input->form + 1;
 	ft_init(input);
 	return (0);
@@ -83,15 +76,12 @@ void	ft_resetflags(t_input *input)
 	input->flagzero = 0;
 	input->islong = 0;
 	ft_bzero(input->flags, ft_strlen(input->flags));
-	//ft_memdel((void **)&input->str);
-	//ft_strdel(&(input->str));
 }
 
-//if %C is - running strdup rather than strjoin...
-//Possible that '-' = 0???
 int		ft_percentsign(t_input *input)
 {
 	char	*prev;
+	char	*temp;
 
 	prev = ft_strndup(input->form, (ft_strchr(input->form, '%') - input->form));
 	input->form = input->form + (ft_strchr(input->form, '%') - input->form);
@@ -100,8 +90,13 @@ int		ft_percentsign(t_input *input)
 	if (!input->str)
 		input->str = ft_strdup(prev);
 	else
-		input->str = ft_strjoin(input->str, prev);
-	ft_memdel((void **)&prev);
+	{
+		temp = ft_strdup(input->str);
+		ft_strdel(&input->str);
+		input->str = ft_strjoin(temp, prev);
+		ft_strdel(&temp);
+	}
+	ft_strdel(&prev);
 	ft_findconvers(input);
 	return (0);
 }
@@ -119,8 +114,8 @@ int		ft_printf(const char *format, ...)
 	if (input->str)
 		ft_putstr(input->str);
 	ret = ft_strlen(input->str) + input->size;
-	// if (*input->str)
-	// 	ft_memdel((void **)&input->str);
+	ft_strdel(&input->str);
+	ft_strdel(&input->flags);
 	free(input);
 	return (ret);
 }

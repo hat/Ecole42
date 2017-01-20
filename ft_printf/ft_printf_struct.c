@@ -6,7 +6,7 @@
 /*   By: thendric <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/13 15:03:52 by thendric          #+#    #+#             */
-/*   Updated: 2017/01/13 15:04:27 by thendric         ###   ########.fr       */
+/*   Updated: 2017/01/19 12:44:46 by thendric         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,6 @@ int		ft_init(t_input *input)
 	}
 	else
 		ft_percentsign(input);
-	//ft_strdel(&input->form);
 	return (0);
 }
 
@@ -34,9 +33,7 @@ t_input	*ft_init_tinput(const char *format)
 	new = (t_input *)ft_memalloc(sizeof(t_input));
 	new->form = ft_strdup((char *)format);
 	new->flags = ft_strnew(1);
-	//FT_MEMALLOC WIDTH HERE
 	new->str = NULL;
-	//REMOVE IF FT_MEMALLOC
 	new->size = 0;
 	new->negative = 0;
 	new->flagplus = 0;
