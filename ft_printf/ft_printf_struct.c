@@ -32,7 +32,7 @@ t_input	*ft_init_tinput(const char *format)
 
 	new = (t_input *)ft_memalloc(sizeof(t_input));
 	new->form = ft_strdup((char *)format);
-	new->flags = ft_strnew(1);
+	new->flags = NULL;
 	new->str = NULL;
 	new->size = 0;
 	new->negative = 0;

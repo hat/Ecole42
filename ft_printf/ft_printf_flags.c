@@ -126,7 +126,7 @@ int		ft_getflags(t_input *input)
 		i++;
 	}
 	c[i - 1] = '\0';
-	input->flags = ft_strjoin(input->flags, c);
+	input->flags = ft_strdup(c);
 	if (wildflag)
 	{
 		input->width = (int)input->var;

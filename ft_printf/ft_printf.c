@@ -10,6 +10,8 @@
 /*                                                                            */
 /* ************************************************************************** */
 
+//Consider making va_list global variable rather than in the struct
+
 #include "ft_printf.h"
 
 int		ft_pickconvers(t_input *input)
@@ -75,7 +77,6 @@ void	ft_resetflags(t_input *input)
 	input->flagminus = 0;
 	input->flagzero = 0;
 	input->islong = 0;
-	ft_bzero(input->flags, ft_strlen(input->flags));
 }
 
 int		ft_percentsign(t_input *input)
@@ -104,13 +105,12 @@ int		ft_percentsign(t_input *input)
 int		ft_printf(const char *format, ...)
 {
 	t_input	*input;
-	va_list	ap;
-	size_t	ret;
+	int		ret;
 
 	input = ft_init_tinput(format);
 	va_start(input->ap, format);
 	ft_init(input);
-	va_end(ap);
+	va_end(input->ap);
 	if (input->str)
 		ft_putstr(input->str);
 	ret = ft_strlen(input->str) + input->size;
