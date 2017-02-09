@@ -21,6 +21,9 @@
 # include <math.h>
 # include <fcntl.h>
 
+#define WIN_HEIGHT 800
+#define WIN_WIDTH 800
+
 # define KEY_ESC 53
 # define KEY_SPACE 49
 
@@ -35,17 +38,38 @@ typedef struct s_point
 	long	x;
 	long	y;
 	long	z;
-}				t_crds;
+}				t_point;
 
-typedef struct s_mlx
+typedef struct s_env
 {
 	void	*mlx;
 	void	*window;
 	long	height;
 	long	width;
-	t_crds	*cords;
-}				t_mlx;
+	t_point	*pnts;
+}				t_env;
 
-# define COLOR 0xaaaa00
+# define COLOR 0x009999
+
+/*
+** Draw functions
+*/
+void	draw_circle(t_env *env, int x0, int y0, int x);
+void	draw_line(t_env *env, int x0, int y0, int x1, int y1);
+void	draw_box(t_env *env, int x0, int y0, int x1, int y1);
+void	draw_grid(t_env *env);
+void	draw_fill(t_env *env);
+
+/*
+** Map functions
+*/
+int		get_coordinates(t_env *env);
+int		get_map_width(t_env *env, char *line);
+int		get_map_size(t_env *env, int argc, char *argv[]);
+
+/*
+** Helper functions
+*/
+int		fdf_get_error(int error, char *string);
 
 #endif
