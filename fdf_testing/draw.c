@@ -93,10 +93,24 @@ void	draw_grid(t_env *env)
 
 	ind = 0;
 	scale = WIN_HEIGHT / env->height;
-	while (ind < env->width * env->height - 1)
+	while (ind < env->height * env->width - 1)
 	{
-		printf("Drawing line from [%ld, %ld] to [%ld, %ld]\n", env->pnts[ind].x * scale, env->pnts[ind].y * scale, env->pnts[ind + 1].x * scale, env->pnts[ind + 1].y * scale);
-		draw_line(env, env->pnts[ind].x * scale, env->pnts[ind].y * scale, env->pnts[ind + 1].x * scale, env->pnts[ind + 1].y * scale);
+		if (env->pnts[ind].x * scale == env->pnts[ind + 1].x * scale)
+		{
+			printf("Drawing line from [%ld, %ld] to [%ld, %ld]\n", env->pnts[ind].x * scale, env->pnts[ind].y * scale, env->pnts[ind + 1].x * scale, env->pnts[ind + 1].y * scale);
+			printf("Color is: %ld\n", env->pnts[ind].z);
+			draw_line(env, env->pnts[ind].x * scale, env->pnts[ind].y * scale, env->pnts[ind + 1].x * scale, env->pnts[ind + 1].y * scale);
+		}
+		ind++;
+	}
+	ind = 0;
+	while (ind < env->height * env->width - 1)
+	{
+		if (env->pnts[ind].x * scale == env->pnts[ind + 1].x * scale)
+		{
+			draw_box(env, env->pnts[ind].y * scale, env->pnts[ind].x * scale, env->pnts[ind + 1].y * scale, env->pnts[ind + 1].x * scale);
+			draw_box(env, env->pnts[ind].x * scale, env->pnts[ind].y * scale, env->pnts[ind + 1].x * scale, env->pnts[ind + 1].y * scale);
+		}
 		ind++;
 	}
 }

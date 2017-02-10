@@ -49,7 +49,7 @@ typedef struct s_env
 	t_point	*pnts;
 }				t_env;
 
-# define COLOR 0x009999
+# define COLOR 0xF2CFE0
 
 /*
 ** Draw functions

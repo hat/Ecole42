@@ -54,6 +54,7 @@ int		get_map_width(t_env *env, char *line)
 	while (*data)
 	{
 		width++;
+		printf("Z is: %d\n", atoi(*data));
 		data++;
 	}
 	if (env->width == 0)
