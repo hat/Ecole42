@@ -73,7 +73,7 @@ void	run_graphics(t_env *env)
 	draw(env);
 	mlx_key_hook(env->window, key_manager, env);
 	mlx_mouse_hook(env->window, mouse_manager, env);
-	mlx_expose_hook(env->window, get_expose, env);
+	//mlx_expose_hook(env->window, get_expose, env);
 	mlx_loop(env->mlx);
 }
 
@@ -85,10 +85,11 @@ int		main(int argc, char *argv[])
 	{
 		env = (t_env *)ft_memalloc(sizeof(t_env));
 		env->mlx = mlx_init();
-		env->window = mlx_new_window(env->mlx, 800, 800, "Playground");
-		get_map_size(env, argc, argv);
+		env->window = mlx_new_window(env->mlx, WIN_HEIGHT, WIN_WIDTH, "Playground");
+		get_map_size(env, argv);
 		get_coordinates(env);
 		run_graphics(env);
+		free(env);
 	}
 	return (0);
 }

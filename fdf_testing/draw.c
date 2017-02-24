@@ -14,7 +14,7 @@
 
 void	draw_circle(t_env *env, int x0, int y0, int x)
 {
-	printf("Drawing circle....");
+	//printf("Drawing circle....");
 	int y = 0;
 	int err = 0;
 
@@ -41,7 +41,6 @@ void	draw_circle(t_env *env, int x0, int y0, int x)
 			err -= 2 * x + 1;
 		}
 	}
-	printf("Circle drawn!\n");
 }
 
 void	draw_line(t_env *env, int x0, int y0, int x1, int y1)
@@ -88,30 +87,25 @@ void	draw_box(t_env *env, int x0, int y0, int x1, int y1)
 
 void	draw_grid(t_env *env)
 {
-	long	ind;
+	long	i;
+	long	j;
 	long	scale;
 
-	ind = 0;
-	scale = WIN_HEIGHT / env->height;
-	while (ind < env->height * env->width - 1)
+	i = 0;
+	j = 0;
+	printf("Min width: %ld Min height: %ld\n", env->width, env->height);
+	scale = WIN_WIDTH / env->width;
+
+	while (i < env->height)
 	{
-		if (env->pnts[ind].x * scale == env->pnts[ind + 1].x * scale)
+		j = 0;
+		while (j < env->width)
 		{
-			printf("Drawing line from [%ld, %ld] to [%ld, %ld]\n", env->pnts[ind].x * scale, env->pnts[ind].y * scale, env->pnts[ind + 1].x * scale, env->pnts[ind + 1].y * scale);
-			printf("Color is: %ld\n", env->pnts[ind].z);
-			draw_line(env, env->pnts[ind].x * scale, env->pnts[ind].y * scale, env->pnts[ind + 1].x * scale, env->pnts[ind + 1].y * scale);
+			draw_line(env, env->pnts[i][j].x * scale, env->pnts[i][j].y * scale, env->pnts[i][j + 1].x * scale, env->pnts[i][j + 1].y * scale);
+			draw_line(env, env->pnts[i][j].x * scale, env->pnts[i][j].y * scale, env->pnts[i + 1][j].x * scale, env->pnts[i + 1][j].y * scale);
+			j++;
 		}
-		ind++;
-	}
-	ind = 0;
-	while (ind < env->height * env->width - 1)
-	{
-		if (env->pnts[ind].x * scale == env->pnts[ind + 1].x * scale)
-		{
-			draw_box(env, env->pnts[ind].y * scale, env->pnts[ind].x * scale, env->pnts[ind + 1].y * scale, env->pnts[ind + 1].x * scale);
-			draw_box(env, env->pnts[ind].x * scale, env->pnts[ind].y * scale, env->pnts[ind + 1].x * scale, env->pnts[ind + 1].y * scale);
-		}
-		ind++;
+		i++;
 	}
 }
 

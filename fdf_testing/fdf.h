@@ -21,8 +21,8 @@
 # include <math.h>
 # include <fcntl.h>
 
-#define WIN_HEIGHT 800
-#define WIN_WIDTH 800
+#define WIN_HEIGHT 300
+#define WIN_WIDTH 300
 
 # define KEY_ESC 53
 # define KEY_SPACE 49
@@ -44,9 +44,10 @@ typedef struct s_env
 {
 	void	*mlx;
 	void	*window;
+	char	*pnts_read;
 	long	height;
 	long	width;
-	t_point	*pnts;
+	t_point	**pnts;
 }				t_env;
 
 # define COLOR 0xF2CFE0
@@ -65,7 +66,7 @@ void	draw_fill(t_env *env);
 */
 int		get_coordinates(t_env *env);
 int		get_map_width(t_env *env, char *line);
-int		get_map_size(t_env *env, int argc, char *argv[]);
+int		get_map_size(t_env *env, char *argv[]);
 
 /*
 ** Helper functions

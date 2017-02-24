@@ -12,35 +12,63 @@
 
 #include "fdf.h"
 
+long	ft_numsize(long num)
+{
+	long size;
+
+	size = 0;
+	if (num < 0)
+	{
+		num *= -1;
+		size++;
+	}
+	if (num == 0)
+		size++;
+	while (num)
+	{
+		num /= 10;
+		size++;
+	}
+	return (size);
+}
+
 int		get_coordinates(t_env *env)
 {
-	long	num_points;
-	long	height;
-	long	width;
+	long	x;
+	long	y;
 	long	cur_pnt;
+	long	max_map_size;
+	char	*tmp;
 
+	max_map_size = 0;
+	max_map_size = env->width > env->height ? env->width : env->height;
 	printf("Width: %ld Height: %ld\n", env->width, env->height);
-	height = 0;
+	x = -1;
 	cur_pnt = 0;
-	num_points = env->width * env->height;
-	env->pnts = (t_point *)malloc(sizeof(t_point) * num_points);
-	while (height < env->height)
+	env->pnts = (t_point **)ft_memalloc(sizeof(t_point *) * env->height);
+	if (env->pnts)
 	{
-		width = 0;
-		while (width < env->width)
+		tmp = env->pnts_read;
+		while (x < env->height)
 		{
-			env->pnts[cur_pnt].x = height;
-			env->pnts[cur_pnt].y = width++;
-			env->pnts[cur_pnt].z = 0;
-			cur_pnt++;
+			y = 0;
+			env->pnts[x] = ft_memalloc(sizeof(t_point) * env->width);
+			while (y < env->width)
+			{
+				env->pnts[x][y].x = x;
+				env->pnts[x][y].y = y;
+				env->pnts[x][y].z = atoi(env->pnts_read);
+				env->pnts_read += ft_numsize(atoi(env->pnts_read)) + 1;
+				y++;
+			}
+			x++;
 		}
-		height++;
+		free(tmp);
 	}
-	// for (int i = 0; i < env->width * env->height; i++)
-	// {
-	// 	printf("Coordinates:\n");
-	// 	printf("\tx: %ld y: %ld z: %ld\n", env->pnts[i].x, env->pnts[i].y, env->pnts[i].z);
-	// }
+	else
+	{
+		printf("Failed mallocing for map points");
+	}
 	return (0);
 }
 
@@ -54,7 +82,6 @@ int		get_map_width(t_env *env, char *line)
 	while (*data)
 	{
 		width++;
-		printf("Z is: %d\n", atoi(*data));
 		data++;
 	}
 	if (env->width == 0)
@@ -70,32 +97,33 @@ int		get_map_width(t_env *env, char *line)
 	return (0);
 }
 
-int		get_map_size(t_env *env, int argc, char *argv[])
+int		get_map_size(t_env *env, char *argv[])
 {
 	int		fd;
 	long	height;
 	char	*line;
+	char	*tmp;
 
 	height = 0;
 	line = NULL;
-	if (argc > 1)
+	env->pnts_read = ft_strnew(0);
+	fd = open(argv[1], O_RDONLY);
+	if (fd < 0)
 	{
-		fd = open(argv[1], O_RDONLY);
-		if (fd < 0)
-		{
-			fdf_get_error(1, "Failed opening file.");
-			return (1);
-		}
-		while (get_next_line(fd, &line))
-		{
-			get_map_width(env, line);
-			height++;
-		}
-		if (env->height == 0)
-			env->height = height;
-		close(fd);
+		fdf_get_error(1, "Failed opening file.");
+		return (1);
 	}
-	else
-		fdf_get_error(1, "No argument.");
+	while (get_next_line(fd, &line))
+	{
+		tmp = env->pnts_read;
+		env->pnts_read = ft_strjoin(env->pnts_read, line);
+		printf("Bout to free\n");
+		free(tmp);
+		printf("Freed it!\n");
+		get_map_width(env, line);
+		height++;
+	}
+	(env->height == 0) ? env->height = height : 0;
+	close(fd);
 	return (0);
 }
