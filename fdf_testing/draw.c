@@ -14,7 +14,6 @@
 
 void	draw_circle(t_env *env, int x0, int y0, int x)
 {
-	//printf("Drawing circle....");
 	int y = 0;
 	int err = 0;
 
@@ -45,34 +44,27 @@ void	draw_circle(t_env *env, int x0, int y0, int x)
 
 void	draw_line(t_env *env, int x0, int y0, int x1, int y1)
 {
-	int dx;
-	int sx;
-	int dy;
-	int sy;
-	int err;
-	int e2;
-
-	dx = abs(x1 - x0);
-	sx = x0 < x1 ? 1 : -1;
-	dy = abs(y1 - y0);
-	sy = y0 < y1 ? 1 : -1;
-	err = (dx > dy ? dx : -dy) / 2;
+	env->dx = abs(x1 - x0);
+	env->sx = x0 < x1 ? 1 : -1;
+	env->dy = abs(y1 - y0);
+	env->sy = y0 < y1 ? 1 : -1;
+	env->err = (env->dx > env->dy ? env->dx : -env->dy) / 2;
 
 	while (1)
 	{
 		mlx_pixel_put(env->mlx, env->window, x0, y0, COLOR);
 		if (x0 == x1 && y0 == y1)
 			break ;
-		e2 = err;
-		if (e2 > -dx)
+		env->e2 = env->err;
+		if (env->e2 > -env->dx)
 		{
-			err -= dy;
-			x0 += sx;
+			env->err -= env->dy;
+			x0 += env->sx;
 		}
-		if (e2 < dy)
+		if (env->e2 < env->dy)
 		{
-			err += dx;
-			y0 += sy;
+			env->err += env->dx;
+			y0 += env->sy;
 		}
 	}
 }
@@ -89,26 +81,26 @@ void	draw_grid(t_env *env)
 {
 	long	i;
 	long	j;
-	long	scale;
-	long	transx;
-	long	transy;
+	// long	scale;
+	// long	transx;
+	// long	transy;
 
 	i = 0;
 	j = 0;
 	printf("Min width: %ld Min height: %ld\n", env->width, env->height);
 
-	scale = env->width > env->height ? (WIN_HEIGHT / 2) / (env->height - 1) : (WIN_WIDTH/ 2) / (env->width - 1);
-	transx = (WIN_WIDTH - ((env->width - 1) * scale)) / 2;
-	transy = (WIN_HEIGHT - ((env->height - 1) * scale)) / 2;
+	// scale = env->width > env->height ? (WIN_HEIGHT / 2) / (env->height - 1) : (WIN_WIDTH/ 2) / (env->width - 1);
+	// transx = (WIN_WIDTH - ((env->width - 1) * scale)) / 2;
+	// transy = (WIN_HEIGHT - ((env->height - 1) * scale)) / 2;
 	while (i < env->height)
 	{
 		j = 0;
 		while (j < env->width)
 		{
 			if (j < env->width - 1)
-				draw_line(env, (env->pnts[i][j].x * scale + transx), (env->pnts[i][j].y * scale + transy), (env->pnts[i][j + 1].x * scale + transx), (env->pnts[i][j + 1].y * scale + transy));
+				draw_line(env, env->pnts[i][j].x, env->pnts[i][j].y, env->pnts[i][j + 1].x, env->pnts[i][j + 1].y);
 			if (i < env->height - 1)
-				draw_line(env, (env->pnts[i][j].x * scale + transx), (env->pnts[i][j].y * scale + transy), (env->pnts[i + 1][j].x * scale + transx), (env->pnts[i + 1][j].y * scale + transy));
+				draw_line(env, env->pnts[i][j].x,env->pnts[i][j].y,env->pnts[i + 1][j].x, env->pnts[i + 1][j].y);
 			j++;
 		}
 		i++;
