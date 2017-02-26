@@ -90,19 +90,25 @@ void	draw_grid(t_env *env)
 	long	i;
 	long	j;
 	long	scale;
+	long	transx;
+	long	transy;
 
 	i = 0;
 	j = 0;
 	printf("Min width: %ld Min height: %ld\n", env->width, env->height);
-	scale = WIN_WIDTH / env->width;
 
+	scale = env->width > env->height ? (WIN_HEIGHT / 2) / (env->height - 1) : (WIN_WIDTH/ 2) / (env->width - 1);
+	transx = (WIN_WIDTH - ((env->width - 1) * scale)) / 2;
+	transy = (WIN_HEIGHT - ((env->height - 1) * scale)) / 2;
 	while (i < env->height)
 	{
 		j = 0;
 		while (j < env->width)
 		{
-			draw_line(env, env->pnts[i][j].x * scale, env->pnts[i][j].y * scale, env->pnts[i][j + 1].x * scale, env->pnts[i][j + 1].y * scale);
-			draw_line(env, env->pnts[i][j].x * scale, env->pnts[i][j].y * scale, env->pnts[i + 1][j].x * scale, env->pnts[i + 1][j].y * scale);
+			if (j < env->width - 1)
+				draw_line(env, (env->pnts[i][j].x * scale + transx), (env->pnts[i][j].y * scale + transy), (env->pnts[i][j + 1].x * scale + transx), (env->pnts[i][j + 1].y * scale + transy));
+			if (i < env->height - 1)
+				draw_line(env, (env->pnts[i][j].x * scale + transx), (env->pnts[i][j].y * scale + transy), (env->pnts[i + 1][j].x * scale + transx), (env->pnts[i + 1][j].y * scale + transy));
 			j++;
 		}
 		i++;

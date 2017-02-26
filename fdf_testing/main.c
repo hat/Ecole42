@@ -22,6 +22,7 @@ void	draw(t_env *env)
 	//printf("Line drawn!\n");
 	//draw_box(env, 50, 50, 300, 300);
 	//printf("Box drawn!\n");
+	//draw_fill(env);
 	draw_grid(env);
 	printf("Grid drawn!\n");
 }

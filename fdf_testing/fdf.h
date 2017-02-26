@@ -21,8 +21,8 @@
 # include <math.h>
 # include <fcntl.h>
 
-#define WIN_HEIGHT 300
-#define WIN_WIDTH 300
+#define WIN_HEIGHT 800
+#define WIN_WIDTH 800
 
 # define KEY_ESC 53
 # define KEY_SPACE 49

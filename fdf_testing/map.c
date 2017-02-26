@@ -12,6 +12,24 @@
 
 #include "fdf.h"
 
+void	rotate_point_z(t_point	*point)
+{
+	float temp;
+
+	temp = point->x;
+	point->x = (point->x * cos(45 * (M_PI / 180))) + (point->y * sin(45 * (M_PI / 180)));
+	point->y = (temp * -sin(45 * (M_PI / 180))) + (point->y * cos(45 * (M_PI / 180)));
+}
+
+void	rotate_point_x(t_point	*point)
+{
+	float temp;
+
+	temp = point->y;
+	point->y = (point->y * cos(atan(-sqrt(2)))) + (point->z * sin(atan(-sqrt(2))));
+	point->z = (temp * -sin(atan(-sqrt(2)))) + (point->z * cos(atan(-sqrt(2))));
+}
+
 long	ft_numsize(long num)
 {
 	long size;
@@ -43,32 +61,32 @@ int		get_coordinates(t_env *env)
 	max_map_size = 0;
 	max_map_size = env->width > env->height ? env->width : env->height;
 	printf("Width: %ld Height: %ld\n", env->width, env->height);
-	x = -1;
+	y = 0;
 	cur_pnt = 0;
 	env->pnts = (t_point **)ft_memalloc(sizeof(t_point *) * env->height);
 	if (env->pnts)
 	{
 		tmp = env->pnts_read;
-		while (x < env->height)
+		while (y < env->height)
 		{
-			y = 0;
-			env->pnts[x] = ft_memalloc(sizeof(t_point) * env->width);
-			while (y < env->width)
+			x = 0;
+			env->pnts[y] = ft_memalloc(sizeof(t_point) * env->width);
+			while (x < env->width)
 			{
-				env->pnts[x][y].x = x;
-				env->pnts[x][y].y = y;
-				env->pnts[x][y].z = atoi(env->pnts_read);
+				env->pnts[y][x].x = x;
+				env->pnts[y][x].y = y;
+				env->pnts[y][x].z = atoi(env->pnts_read);
+				rotate_point_z(&env->pnts[y][x]);
+				rotate_point_x(&env->pnts[y][x]);
 				env->pnts_read += ft_numsize(atoi(env->pnts_read)) + 1;
-				y++;
+				x++;
 			}
-			x++;
+			y++;
 		}
 		free(tmp);
 	}
 	else
-	{
-		printf("Failed mallocing for map points");
-	}
+		fdf_get_error(1, "Malloc failed line 45");
 	return (0);
 }
 
@@ -89,10 +107,7 @@ int		get_map_width(t_env *env, char *line)
 	else
 	{
 		if (width != env->width)
-		{
-			printf("Env->width: %ld Width: %ld\n", env->width, width);
 			fdf_get_error(1, "Invalid line length in file.");
-		}
 	}
 	return (0);
 }
@@ -117,9 +132,7 @@ int		get_map_size(t_env *env, char *argv[])
 	{
 		tmp = env->pnts_read;
 		env->pnts_read = ft_strjoin(env->pnts_read, line);
-		printf("Bout to free\n");
 		free(tmp);
-		printf("Freed it!\n");
 		get_map_width(env, line);
 		height++;
 	}
