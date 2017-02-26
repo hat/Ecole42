@@ -12,7 +12,7 @@
 
 #include "fdf.h"
 
-static size_t	ft_wordcount(char const *s, char c)
+size_t	ft_wordcount(char const *s, char c)
 {
 	size_t	words;
 
@@ -29,27 +29,27 @@ static size_t	ft_wordcount(char const *s, char c)
 	return (words);
 }
 
-void	rotate_point_z(t_point	*point)
+void	rot_z_axis(t_point *point, float angle)
 {
-	float temp;
+	float	temp;
 
 	temp = point->x;
-	point->x = (point->x * cos(45 * (M_PI / 180)) + (point->y * sin(45 * (M_PI / 180))));
-	point->y = (temp * -sin(45 * (M_PI / 180)) + (point->y * cos(45 * (M_PI / 180))));
+	point->x = (point->x * cos(angle) + (point->y * sin(angle)));
+	point->y = (temp * -sin(angle) + (point->y * cos(angle)));
 }
 
-void	rotate_point_x(t_point	*point)
+void	rot_x_axis(t_point *point, float angle)
 {
-	float temp;
+	float	temp;
 
 	temp = point->y;
-	point->y = (point->y * cos(atan(-sqrt(2))) + (point->z * sin(atan(-sqrt(2)))));
-	point->z = (temp * -sin(atan(-sqrt(2))) + (point->z * cos(atan(-sqrt(2)))));
+	point->y = (point->y * cos(angle) + (point->z * sin(angle)));
+	point->z = (temp * -sin(angle) + (point->z * cos(angle)));
 }
 
 long	ft_numsize(long num)
 {
-	long size;
+	long	size;
 
 	size = 0;
 	if (num < 0)
@@ -69,46 +69,49 @@ long	ft_numsize(long num)
 
 void	set_map(t_env *env)
 {
-	env->pnts[env->y][env->x].x = env->x;
-	env->pnts[env->y][env->x].y = env->y;
-	env->pnts[env->y][env->x].z = atoi(env->pnts_read[env->i]);
-	env->pnts[env->y][env->x].x *= env->scale;
-	env->pnts[env->y][env->x].y *= env->scale;
-	env->pnts[env->y][env->x].z *= env->scale;
-	env->pnts[env->y][env->x].x -= env->transx;
-	env->pnts[env->y][env->x].y -= env->transy;
-	rotate_point_z(&env->pnts[env->y][env->x]);
-	rotate_point_x(&env->pnts[env->y][env->x]);
-	env->pnts[env->y][env->x].x += (WIN_WIDTH / 2);
-	env->pnts[env->y][env->x].y += (WIN_HEIGHT / 2);
-	env->x++;
-	env->i++;	
+	env->pnts[env->cords.y][env->cords.x].x = env->cords.x;
+	env->pnts[env->cords.y][env->cords.x].y = env->cords.y;
+	env->pnts[env->cords.y][env->cords.x].z =
+								atoi(env->pnts_read[env->cords.i]);
+	env->pnts[env->cords.y][env->cords.x].x *= env->trans.scale;
+	env->pnts[env->cords.y][env->cords.x].y *= env->trans.scale;
+	env->pnts[env->cords.y][env->cords.x].z *= env->trans.scale;
+	env->pnts[env->cords.y][env->cords.x].x += env->trans.transx;
+	env->pnts[env->cords.y][env->cords.x].y += env->trans.transy;
+	rot_z_axis(&env->pnts[env->cords.y][env->cords.x], 45 * (M_PI / 180));
+	rot_x_axis(&env->pnts[env->cords.y][env->cords.x], atan(-sqrt(2)));
+	env->pnts[env->cords.y][env->cords.x].x += (WIN_WIDTH / 2);
+	env->pnts[env->cords.y][env->cords.x].y += (WIN_HEIGHT / 2);
+	env->cords.x++;
+	env->cords.i++;
 }
 
 int		get_coordinates(t_env *env)
 {
-	env->scale = (env->width > env->height) ? (WIN_HEIGHT / 2) / (env->height - 1) : (WIN_WIDTH / 2) / (env->width - 1);
-	env->transx = (WIN_WIDTH - ((env->width - 1) * env->scale)) / 2;
-	env->transy = (WIN_HEIGHT - ((env->height - 1) * env->scale)) / 2;
-	env->y = 0;
-	env->cur_pnt = 0;
-	env->i = 0;
-	env->pnts = (t_point **)ft_memalloc(sizeof(t_point *) * env->height);
+	env->trans.scale = (env->wdth > env->hght) ? (WIN_HEIGHT / 2)
+					/ (env->hght - 1) : (WIN_WIDTH / 2) / (env->wdth - 1);
+	env->trans.transx = (WIN_WIDTH - (env->wdth - 1) * env->trans.scale) / 2;
+	env->trans.transy = (WIN_HEIGHT - (env->hght - 1) * env->trans.scale) / 2;
+	env->cords.y = 0;
+	env->cords.cur_pnt = 0;
+	env->cords.i = 0;
+	env->pnts = (t_point **)ft_memalloc(sizeof(t_point *) * env->hght);
 	if (env->pnts)
 	{
-		while (env->y < env->height)
+		while (env->cords.y < env->hght)
 		{
-			env->x = 0;
-			env->pnts[env->y] = (t_point *)ft_memalloc(sizeof(t_point) * env->width);
-			while (env->x < env->width)
+			env->cords.x = 0;
+			env->pnts[env->cords.y] =
+				(t_point *)ft_memalloc(sizeof(t_point) * env->wdth);
+			while (env->cords.x < env->wdth)
 			{
 				set_map(env);
 			}
-			env->y++;
+			env->cords.y++;
 		}
 	}
 	else
-		fdf_get_error(1, "Malloc failed line 45");
+		return (fdf_get_error(1, "Malloc failed line 45"));
 	return (0);
 }
 
@@ -123,13 +126,8 @@ int		get_map_size(t_env *env, char *argv[])
 	height = 0;
 	full = ft_strnew(1);
 	fd = open(argv[1], O_RDONLY);
-	if (fd == -1)
-		fdf_get_error(1, "FILE!\n");
 	if (fd < 0)
-	{
-		fdf_get_error(1, "Failed opening file.");
-		return (1);
-	}
+		return (fdf_get_error(1, "ERROR: fine not found."));
 	while (get_next_line(fd, &line))
 	{
 		width = ft_wordcount(line, ' ');
@@ -137,9 +135,9 @@ int		get_map_size(t_env *env, char *argv[])
 		line = ft_strjoin(line, " ");
 		full = ft_strjoin(full, line);
 		free(line);
-		(env->width == 0) ? env->width = width : 0;
+		(env->wdth == 0) ? env->wdth = width : 0;
 	}
-	(env->height == 0) ? env->height = height : 0;
+	(env->hght == 0) ? env->hght = height : 0;
 	env->pnts_read = ft_strsplit(full, ' ');
 	close(fd);
 	return (0);
