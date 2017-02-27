@@ -12,7 +12,7 @@
 
 #include "fdf.h"
 
-size_t	ft_wordcount(char const *s, char c)
+long	ft_wordcount(char const *s, char c)
 {
 	size_t	words;
 
@@ -67,78 +67,82 @@ long	ft_numsize(long num)
 	return (size);
 }
 
-void	set_map(t_env *env)
+void	isometric(t_env *env)
 {
-	env->pnts[env->cords.y][env->cords.x].x = env->cords.x;
-	env->pnts[env->cords.y][env->cords.x].y = env->cords.y;
-	env->pnts[env->cords.y][env->cords.x].z =
-								atoi(env->pnts_read[env->cords.i]);
-	env->pnts[env->cords.y][env->cords.x].x *= env->trans.scale;
-	env->pnts[env->cords.y][env->cords.x].y *= env->trans.scale;
-	env->pnts[env->cords.y][env->cords.x].z *= env->trans.scale;
-	env->pnts[env->cords.y][env->cords.x].x += env->trans.transx;
-	env->pnts[env->cords.y][env->cords.x].y += env->trans.transy;
-	rot_z_axis(&env->pnts[env->cords.y][env->cords.x], 45 * (M_PI / 180));
-	rot_x_axis(&env->pnts[env->cords.y][env->cords.x], atan(-sqrt(2)));
-	env->pnts[env->cords.y][env->cords.x].x += (WIN_WIDTH / 2);
-	env->pnts[env->cords.y][env->cords.x].y += (WIN_HEIGHT / 2);
-	env->cords.x++;
-	env->cords.i++;
+	printf("Transx: %ld\n", env->trans.transx);
+	env->trans.scale = ceil((env->wdth > env->hght) ? ((float)WIN_HEIGHT / 2) / ((float)env->hght - 1) : ((float)WIN_WIDTH / 2) / ((float)env->wdth - 1));
+	env->trans.transx = (WIN_WIDTH - ((env->wdth - 1) * env->trans.scale)) / 2;
+	env->trans.transy = (WIN_HEIGHT - (env->hght - 1) * env->trans.scale) / 2;
+	env->cords->x = 0;
+	printf("Just scale: %f\n", env->trans.scale);
+	printf(" Win_Height: %d Env->hght %ld Win_Width %d Env-wdth: %ld Scale: %f Transx: %ld Transy: %ld\n", WIN_HEIGHT, env->hght, WIN_WIDTH, env->wdth, env->trans.scale, env->trans.transx, env->trans.transy);
+	printf("Scale %f Math: %ld\n", env->trans.scale, (long)WIN_WIDTH - ((long)env->wdth - 1) * (long)env->trans.scale);
+	printf("%f ::: %f \n", 45 * (M_PI / 180), atan(-sqrt(2)));
+	while (env->cords->x < env->hght)
+	{
+			env->cords->y = 0;
+			while (env->cords->y < env->wdth)
+			{
+				env->pnts[env->cords->x][env->cords->y].x *= env->trans.scale;
+				env->pnts[env->cords->x][env->cords->y].y *= env->trans.scale;
+				env->pnts[env->cords->x][env->cords->y].z *= env->trans.scale;
+				env->pnts[env->cords->x][env->cords->y].x -= env->trans.transx;
+				env->pnts[env->cords->x][env->cords->y].y -= env->trans.transy;
+				rot_z_axis(&env->pnts[env->cords->x][env->cords->y], 45 * (M_PI / 180));
+				rot_x_axis(&env->pnts[env->cords->x][env->cords->y], atan(-sqrt(2)));
+				env->pnts[env->cords->x][env->cords->y].x += (WIN_WIDTH / 2);
+				env->pnts[env->cords->x][env->cords->y].y += (WIN_HEIGHT / 2);
+				env->cords->y++;
+			}
+			env->cords->x++;
+	}
 }
 
 int		get_coordinates(t_env *env)
 {
-	env->trans.scale = (env->wdth > env->hght) ? (WIN_HEIGHT / 2)
-					/ (env->hght - 1) : (WIN_WIDTH / 2) / (env->wdth - 1);
-	env->trans.transx = (WIN_WIDTH - (env->wdth - 1) * env->trans.scale) / 2;
-	env->trans.transy = (WIN_HEIGHT - (env->hght - 1) * env->trans.scale) / 2;
-	env->cords.y = 0;
-	env->cords.cur_pnt = 0;
-	env->cords.i = 0;
-	env->pnts = (t_point **)ft_memalloc(sizeof(t_point *) * env->hght);
-	if (env->pnts)
+	if (!(env->cords = (t_coords *)ft_memalloc(sizeof(t_coords))))
+		return (fdf_get_error(1, "ERROR: malloc failed"));
+	if (!(env->pnts = (t_point **)ft_memalloc(sizeof(t_point *) * env->hght)))
+		return (fdf_get_error(1, "ERROR: malloc failed"));
+	while (env->cords->y < env->hght)
 	{
-		while (env->cords.y < env->hght)
+		env->cords->x = 0;
+		if (!(env->pnts[env->cords->y] = (t_point *)ft_memalloc(sizeof(t_point) * env->wdth)))
+			return (fdf_get_error(1, "ERROR: malloc failed"));
+		while (env->cords->x < env->wdth)
 		{
-			env->cords.x = 0;
-			env->pnts[env->cords.y] =
-				(t_point *)ft_memalloc(sizeof(t_point) * env->wdth);
-			while (env->cords.x < env->wdth)
-			{
-				set_map(env);
-			}
-			env->cords.y++;
+				env->pnts[env->cords->y][env->cords->x].x = env->cords->x;
+				env->pnts[env->cords->y][env->cords->x].y = env->cords->y;
+				env->pnts[env->cords->y][env->cords->x].z = atoi(env->pnts_read[env->cords->i]);
+				env->cords->x++;
+				env->cords->i++;
 		}
+		env->cords->y++;
 	}
-	else
-		return (fdf_get_error(1, "Malloc failed line 45"));
 	return (0);
 }
 
-int		get_map_size(t_env *env, char *argv[])
+void		parse_map(t_env *env, int fd)
 {
-	int		fd;
-	long	height;
-	long	width;
 	char	*line;
 	char	*full;
 
-	height = 0;
 	full = ft_strnew(1);
-	fd = open(argv[1], O_RDONLY);
-	if (fd < 0)
-		return (fdf_get_error(1, "ERROR: fine not found."));
-	while (get_next_line(fd, &line))
+	while ((get_next_line(fd, &line)) > 0)
 	{
-		width = ft_wordcount(line, ' ');
-		height++;
+		if (!env->wdth)
+			env->wdth = ft_wordcount(line, ' ');
+		else if (env->wdth != ft_wordcount(line, ' '))
+		{
+			fdf_get_error(1, "ERROR: map has invalid width\n");
+			break ;
+		}
+		env->hght++;
 		line = ft_strjoin(line, " ");
 		full = ft_strjoin(full, line);
 		free(line);
-		(env->wdth == 0) ? env->wdth = width : 0;
 	}
-	(env->hght == 0) ? env->hght = height : 0;
 	env->pnts_read = ft_strsplit(full, ' ');
 	close(fd);
-	return (0);
+	get_coordinates(env);
 }

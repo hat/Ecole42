@@ -43,6 +43,7 @@ void	draw_circle(t_env *env, int x0, int y0, int x)
 
 void	draw_line(t_env *env, int x0, int y0, int x1, int y1)
 {
+	env->color += 200;
 	env->line.dx = abs(x1 - x0);
 	env->line.sx = x0 < x1 ? 1 : -1;
 	env->line.dy = abs(y1 - y0);
@@ -50,7 +51,7 @@ void	draw_line(t_env *env, int x0, int y0, int x1, int y1)
 	env->line.err = (env->line.dx > env->line.dy ? env->line.dx : -env->line.dy) / 2;
 	while (1)
 	{
-		mlx_pixel_put(env->mlx, env->window, x0, y0, COLOR);
+		mlx_pixel_put(env->mlx, env->window, x0, y0, env->color);
 		if (x0 == x1 && y0 == y1)
 			break ;
 		env->line.e2 = env->line.err;
