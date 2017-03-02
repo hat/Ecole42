@@ -71,7 +71,7 @@ void	isometric(t_env *env)
 {
 	printf("Transx: %ld\n", env->trans.transx);
 	env->trans.scale = ceil((env->wdth > env->hght) ? ((float)WIN_HEIGHT / 2) / ((float)env->hght - 1) : ((float)WIN_WIDTH / 2) / ((float)env->wdth - 1));
-	env->trans.transx = (WIN_WIDTH - ((env->wdth - 1) * env->trans.scale)) / 2;
+	env->trans.transx = (WIN_WIDTH - (env->wdth - 1) * env->trans.scale) / 2;
 	env->trans.transy = (WIN_HEIGHT - (env->hght - 1) * env->trans.scale) / 2;
 	env->cords->x = 0;
 	printf("Just scale: %f\n", env->trans.scale);
@@ -80,21 +80,21 @@ void	isometric(t_env *env)
 	printf("%f ::: %f \n", 45 * (M_PI / 180), atan(-sqrt(2)));
 	while (env->cords->x < env->hght)
 	{
-			env->cords->y = 0;
-			while (env->cords->y < env->wdth)
-			{
-				env->pnts[env->cords->x][env->cords->y].x *= env->trans.scale;
-				env->pnts[env->cords->x][env->cords->y].y *= env->trans.scale;
-				env->pnts[env->cords->x][env->cords->y].z *= env->trans.scale;
-				env->pnts[env->cords->x][env->cords->y].x -= env->trans.transx;
-				env->pnts[env->cords->x][env->cords->y].y -= env->trans.transy;
-				rot_z_axis(&env->pnts[env->cords->x][env->cords->y], 45 * (M_PI / 180));
-				rot_x_axis(&env->pnts[env->cords->x][env->cords->y], atan(-sqrt(2)));
-				env->pnts[env->cords->x][env->cords->y].x += (WIN_WIDTH / 2);
-				env->pnts[env->cords->x][env->cords->y].y += (WIN_HEIGHT / 2);
-				env->cords->y++;
-			}
-			env->cords->x++;
+		env->cords->y = 0;
+		while (env->cords->y < env->wdth)
+		{
+			env->pnts[env->cords->x][env->cords->y].x *= env->trans.scale;
+			env->pnts[env->cords->x][env->cords->y].y *= env->trans.scale;
+			env->pnts[env->cords->x][env->cords->y].z *= env->trans.scale;
+			env->pnts[env->cords->x][env->cords->y].x -= env->trans.transx;
+			env->pnts[env->cords->x][env->cords->y].y -= env->trans.transy;
+			rot_z_axis(&env->pnts[env->cords->x][env->cords->y], 45 * (M_PI / 180));
+			rot_x_axis(&env->pnts[env->cords->x][env->cords->y], atan(-sqrt(2)));
+			env->pnts[env->cords->x][env->cords->y].x += (WIN_HEIGHT / 2);
+			env->pnts[env->cords->x][env->cords->y].y += (WIN_WIDTH / 2);
+			env->cords->y++;
+		}
+		env->cords->x++;
 	}
 }
 
@@ -111,11 +111,11 @@ int		get_coordinates(t_env *env)
 			return (fdf_get_error(1, "ERROR: malloc failed"));
 		while (env->cords->x < env->wdth)
 		{
-				env->pnts[env->cords->y][env->cords->x].x = env->cords->x;
-				env->pnts[env->cords->y][env->cords->x].y = env->cords->y;
-				env->pnts[env->cords->y][env->cords->x].z = atoi(env->pnts_read[env->cords->i]);
-				env->cords->x++;
-				env->cords->i++;
+			env->pnts[env->cords->y][env->cords->x].x = env->cords->x;
+			env->pnts[env->cords->y][env->cords->x].y = env->cords->y;
+			env->pnts[env->cords->y][env->cords->x].z = atoi(env->pnts_read[env->cords->i]);
+			env->cords->x++;
+			env->cords->i++;
 		}
 		env->cords->y++;
 	}

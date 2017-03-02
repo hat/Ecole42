@@ -41,9 +41,23 @@ void	draw_circle(t_env *env, int x0, int y0, int x)
 	}
 }
 
+void	draw_point(t_env *env, int x, int y)
+{
+	int i;
+
+	//env->color += 200;
+	if (x >= 0 && y >= 0 && x < WIN_WIDTH && y < WIN_HEIGHT)
+	{
+		//color = fdf->colors[(int)which];
+		i = (x * 4) + (y * env->lsize);
+		env->pix_map[i] = env->color;
+		env->pix_map[++i] = env->color >> 8;
+		env->pix_map[++i] = env->color >> 16;
+	}
+}
+
 void	draw_line(t_env *env, int x0, int y0, int x1, int y1)
 {
-	env->color += 200;
 	env->line.dx = abs(x1 - x0);
 	env->line.sx = x0 < x1 ? 1 : -1;
 	env->line.dy = abs(y1 - y0);
@@ -51,7 +65,8 @@ void	draw_line(t_env *env, int x0, int y0, int x1, int y1)
 	env->line.err = (env->line.dx > env->line.dy ? env->line.dx : -env->line.dy) / 2;
 	while (1)
 	{
-		mlx_pixel_put(env->mlx, env->window, x0, y0, env->color);
+		draw_point(env, x0 + env->move_x, y0 + env->move_y);
+		// mlx_pixel_put(env->mlx, env->window, x0, y0, env->color);
 		if (x0 == x1 && y0 == y1)
 			break ;
 		env->line.e2 = env->line.err;

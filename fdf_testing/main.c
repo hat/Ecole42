@@ -14,7 +14,14 @@
 
 void	draw(t_env *env)
 {
+	int bpp;
+	int ed;
+
+	env->img = mlx_new_image(env->mlx, WIN_WIDTH, WIN_HEIGHT);
+	env->pix_map = mlx_get_data_addr(env->img, &bpp, &(env->lsize), &ed);
 	draw_grid(env);
+	mlx_put_image_to_window(env->mlx, env->window, env->img, 0, 0);
+	mlx_destroy_image(env->mlx, env->img);
 }
 
 int		fdf_get_error(int error, char *string)
@@ -46,22 +53,16 @@ int		mouse_manager(int button, int x, int y, t_env *env)
 int		key_manager(int keycode, t_env *env)
 {
 	if (keycode == KEY_ESC)
-	{
-		mlx_destroy_window(env->mlx, env->window);
 		exit(1);
-	}
-	if (keycode == KEY_W)
-	{
-		env->trans.scale++;
-		isometric(env);
-		mlx_clear_window(env->mlx, env->window);
-		draw(env);
-	}
 	if (keycode == KEY_SPACE)
-	{
 		mlx_clear_window(env->mlx, env->window);
-		draw(env);
-	}
+	env->move_y = (keycode == KEY_UP) ? env->move_y - 5 : env->move_y;
+	env->move_y = (keycode == KEY_DOWN) ? env->move_y + 5 : env->move_y;
+	env->move_x = (keycode == KEY_RIGHT) ? env->move_x + 5 : env->move_x;
+	env->move_x = (keycode == KEY_LEFT) ? env->move_x - 5 : env->move_x;
+	env->color = (keycode == KEY_Z) ? env->color - 200 : env->color;
+	env->color = (keycode == KEY_X) ? env->color + 200 : env->color;
+	draw(env);
 	return (0);
 }
 
