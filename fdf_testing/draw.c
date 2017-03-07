@@ -12,73 +12,82 @@
 
 #include <fdf.h>
 
-void	draw_circle(t_env *env, int x0, int y0, int x)
+void	draw(t_env *env)
 {
-	env->color += 200;
-	env->circle.y = 0;
-	env->circle.err = 0;
-	while (x >= env->circle.y)
+	int bpp;
+	int ed;
+	
+	env->img = mlx_new_image(env->mlx, WIN_WIDTH, WIN_HEIGHT);
+	env->pix_map = mlx_get_data_addr(env->img, &bpp, &(env->lsize), &ed);
+	draw_grid(env);
+	mlx_put_image_to_window(env->mlx, env->win, env->img, 0, 0);
+	mlx_destroy_image(env->mlx, env->img);
+}
+
+void	setup_colors(t_env *env)
+{
+	int		i;
+	double	r[3];
+	double	g[3];
+	double	b[3];
+
+	env->clrs = (int *)malloc(sizeof(int) * 101);
+	r[0] = (double)(env->clr1 >> 16 & 0xFF);
+	r[1] = (double)(env->clr2 >> 16 & 0xFF);
+	g[0] = (double)(env->clr1 >> 8 & 0xFF);
+	g[1] = (double)(env->clr2 >> 8 & 0xFF);
+	b[0] = (double)(env->clr1 & 0xFF);
+	b[1] = (double)(env->clr2 & 0xFF);
+	i = -1;
+	while (++i <= 100)
 	{
-		mlx_pixel_put(env->mlx, env->window, x0 + x, y0 + env->circle.y, env->color);
-		mlx_pixel_put(env->mlx, env->window, x0 + x, y0 + env->circle.y, env->color);
-		mlx_pixel_put(env->mlx, env->window, x0 + env->circle.y, y0 + x, env->color);
-		mlx_pixel_put(env->mlx, env->window, x0 - env->circle.y, y0 + x, env->color);
-		mlx_pixel_put(env->mlx, env->window, x0 - x, y0 + env->circle.y, env->color);
-		mlx_pixel_put(env->mlx, env->window, x0 - x, y0 - env->circle.y, env->color);
-		mlx_pixel_put(env->mlx, env->window, x0 - env->circle.y, y0 - x, env->color);
-		mlx_pixel_put(env->mlx, env->window, x0 + env->circle.y, y0 - x, env->color);
-		mlx_pixel_put(env->mlx, env->window, x0 + x, y0 - env->circle.y, env->color);
-		if (env->circle.err <= 0)
-		{
-			env->circle.y += 1;
-			env->circle.err += 2 * env->circle.y + 1;
-		}
-		if (env->circle.err > 0)
-		{
-			x -= 1;
-			env->circle.err -= 2 * x + 1;
-		}
+		r[2] = (double)(r[1] * i) / 100 + (double)(r[0] * (100 - i)) / 100;
+		g[2] = (double)(g[1] * i) / 100 + (double)(g[0] * (100 - i)) / 100;
+		b[2] = (double)(b[1] * i) / 100 + (double)(b[0] * (100 - i)) / 100;
+		env->clrs[i] = (int)r[2] << 16 | (int)g[2] << 8 | (int)b[2];
 	}
 }
 
 void	draw_point(t_env *env, int x, int y)
 {
-	int i;
+	int				i;
+	int				which;
+	unsigned int	color;
 
-	//env->color += 200;
 	if (x >= 0 && y >= 0 && x < WIN_WIDTH && y < WIN_HEIGHT)
 	{
-		//color = fdf->colors[(int)which];
+		which = ((float)env->cur_z - (float)env->z_min) / ((float)env->z_max - (float)env->z_min) * 100;
+		color = env->clrs[(int)which];
 		i = (x * 4) + (y * env->lsize);
-		env->pix_map[i] = env->color;
-		env->pix_map[++i] = env->color >> 8;
-		env->pix_map[++i] = env->color >> 16;
+		env->pix_map[i] = color;
+		env->pix_map[++i] = color >> 8;
+		env->pix_map[++i] = color >> 16;
 	}
 }
 
-void	draw_line(t_env *env, int x0, int y0, int x1, int y1)
+void	draw_line(t_env *env, t_point *pnt)
 {
-	env->line.dx = abs(x1 - x0);
-	env->line.sx = x0 < x1 ? 1 : -1;
-	env->line.dy = abs(y1 - y0);
-	env->line.sy = y0 < y1 ? 1 : -1;
-	env->line.err = (env->line.dx > env->line.dy ? env->line.dx : -env->line.dy) / 2;
+	env->line.dx = abs(pnt[1].x - pnt[0].x);
+	env->line.sx = pnt[0].x < pnt[1].x ? 1 : -1;
+	env->line.dy = abs(pnt[1].y - pnt[0].y);
+	env->line.sy = pnt[0].y < pnt[1].y ? 1 : -1;
+	env->line.err = (env->line.dx > env->line.dy ?
+		env->line.dx : -env->line.dy) / 2;
 	while (1)
 	{
-		draw_point(env, x0 + env->move_x, y0 + env->move_y);
-		// mlx_pixel_put(env->mlx, env->window, x0, y0, env->color);
-		if (x0 == x1 && y0 == y1)
+		draw_point(env, pnt[0].x + env->move_x, pnt[0].y + env->move_y);
+		if (pnt[0].x == pnt[1].x && pnt[0].y == pnt[1].y)
 			break ;
 		env->line.e2 = env->line.err;
 		if (env->line.e2 > -env->line.dx)
 		{
 			env->line.err -= env->line.dy;
-			x0 += env->line.sx;
+			pnt[0].x += env->line.sx;
 		}
 		if (env->line.e2 < env->line.dy)
 		{
 			env->line.err += env->line.dx;
-			y0 += env->line.sy;
+			pnt[0].y += env->line.sy;
 		}
 	}
 }
@@ -87,20 +96,27 @@ void	draw_grid(t_env *env)
 {
 	long	i;
 	long	j;
+	t_point	*pnt;
 
-	i = 0;
-	j = 0;
-	while (i < env->hght)
+	i = -1;
+	pnt = (t_point *)ft_memalloc(sizeof(t_point) * 2);
+	while (++i < env->hght)
 	{
-		j = 0;
-		while (j < env->wdth)
+		j = -1;
+		while (++j < env->wdth)
 		{
+			env->cur_z = env->pnts[i][j].height;
 			if (j < env->wdth - 1)
-				draw_line(env, env->pnts[i][j].x, env->pnts[i][j].y, env->pnts[i][j + 1].x, env->pnts[i][j + 1].y);
+			{
+				setup_point_width(env, pnt, i, j);
+				draw_line(env, pnt);
+			}
 			if (i < env->hght - 1)
-				draw_line(env, env->pnts[i][j].x, env->pnts[i][j].y, env->pnts[i + 1][j].x, env->pnts[i + 1][j].y);
-			j++;
+			{
+				setup_point_height(env, pnt, i, j);
+				draw_line(env, pnt);
+			}
 		}
-		i++;
 	}
+	ft_memdel((void *)&pnt);
 }
