@@ -9,7 +9,7 @@ typedef struct	s_file
 
 typedef struct	s_all
 {
-	unsigned int	options;
+	int				options;
 	t_file			*file;
 }				t_all;
 

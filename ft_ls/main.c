@@ -18,13 +18,13 @@ void	print_dirs_reverse(t_file *file)
 
 void	print_dirs(t_all *lst)
 {
-	if (lst->options == 0)
+	if ( !(lst->options >> 4) )
 		while (lst->file->next)
 		{
 			ft_printf("%s\n", lst->file->name);
 			lst->file = lst->file->next;
 		}
-		else if (lst->options == 16)
+	else if (lst->options == 16)
 			print_dirs_reverse(lst->file);
 }
 
@@ -43,30 +43,41 @@ void	get_dirs(t_all *lst)
 	{
 		while ((rdir = readdir(dir)) != NULL)
 		{
-			if (lst->options != 2 && *rdir->d_name != '.') //change to bitwise
+			if ( !(lst->options >> 0) ) //change to bitwise
+			{
+				if (* rdir->d_name != '.')
+				{
+					head->name = rdir->d_name;
+					head->next = (t_file *)ft_memalloc(sizeof(t_file));
+					head = head->next;
+				}
+			}
+			else
 			{
 				head->name = rdir->d_name;
 				head->next = (t_file *)ft_memalloc(sizeof(t_file));
 				head = head->next;
 			}
+
 		}
 	}
 }
 
 void	get_options(t_all *lst, char *args[])
 {
+	lst->options = 0x0;
 	while (*args)
 	{
 		if (ft_strcmp(*args, "-a") == 0)
-			lst->options += 2;
+			lst->options += 0x2;
 		if (ft_strcmp(*args, "-l") == 0)
-			lst->options += pow(2, 2);
+			lst->options += (0x1 << 2);
 		if (ft_strcmp(*args, "-R") == 0)
-			lst->options += pow(2, 3);
+			lst->options += (0x1 << 3);
 		if (ft_strcmp(*args, "-r") == 0)
-			lst->options += pow(2, 4);
+			lst->options += (0x1 << 4);
 		if (ft_strcmp(*args, "-t") == 0)
-			lst->options += pow(2, 5);
+			lst->options += (0x1 << 5);
 		args++;
 	}
 }
