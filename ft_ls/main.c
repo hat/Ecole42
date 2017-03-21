@@ -7,6 +7,11 @@
 
 #include <math.h> // Add to libft
 
+int		check_bit(const int num, int byte)
+{
+	return ((num) & (1<<(byte)));
+}
+
 void	print_dirs_reverse(t_file *file)
 {
 	if (!file)
@@ -18,13 +23,13 @@ void	print_dirs_reverse(t_file *file)
 
 void	print_dirs(t_all *lst)
 {
-	if ( !(lst->options >> 4) )
+	if ( !(check_bit(lst->options, 4)) )
 		while (lst->file->next)
 		{
 			ft_printf("%s\n", lst->file->name);
 			lst->file = lst->file->next;
 		}
-	else if (lst->options == 16)
+	else
 			print_dirs_reverse(lst->file);
 }
 
@@ -43,7 +48,7 @@ void	get_dirs(t_all *lst)
 	{
 		while ((rdir = readdir(dir)) != NULL)
 		{
-			if ( !(lst->options >> 0) ) //change to bitwise
+			if ( !(check_bit(lst->options, 1)) ) //change to bitwise
 			{
 				if (* rdir->d_name != '.')
 				{
@@ -69,7 +74,7 @@ void	get_options(t_all *lst, char *args[])
 	while (*args)
 	{
 		if (ft_strcmp(*args, "-a") == 0)
-			lst->options += 0x2;
+			lst->options += (0x1 << 1);
 		if (ft_strcmp(*args, "-l") == 0)
 			lst->options += (0x1 << 2);
 		if (ft_strcmp(*args, "-R") == 0)
