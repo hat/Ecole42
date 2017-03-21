@@ -32,6 +32,37 @@
 //          u_long   st_gen;    /* file generation number */
 // };
 
+
+    if(argc != 2)    
+        return 1;
+
+    struct stat fileStat;
+    if(stat(argv[1],&fileStat) < 0)    
+        return 1;
+
+    printf("Information for %s\n",argv[1]);
+    printf("---------------------------\n");
+    printf("File Size: \t\t%d bytes\n",fileStat.st_size);
+    printf("Number of Links: \t%d\n",fileStat.st_nlink);
+    printf("File inode: \t\t%d\n",fileStat.st_ino);
+
+    printf("File Permissions: \t");
+    printf( (S_ISDIR(fileStat.st_mode)) ? "d" : "-");
+    printf( (fileStat.st_mode & S_IRUSR) ? "r" : "-");
+    printf( (fileStat.st_mode & S_IWUSR) ? "w" : "-");
+    printf( (fileStat.st_mode & S_IXUSR) ? "x" : "-");
+    printf( (fileStat.st_mode & S_IRGRP) ? "r" : "-");
+    printf( (fileStat.st_mode & S_IWGRP) ? "w" : "-");
+    printf( (fileStat.st_mode & S_IXGRP) ? "x" : "-");
+    printf( (fileStat.st_mode & S_IROTH) ? "r" : "-");
+    printf( (fileStat.st_mode & S_IWOTH) ? "w" : "-");
+    printf( (fileStat.st_mode & S_IXOTH) ? "x" : "-");
+    printf("\n\n");
+
+    printf("The file %s a symbolic link\n", (S_ISLNK(fileStat.st_mode)) ? "is" : "is not");
+
+    return 0;
+
 int		main(void)
 {
 	void			*dir;
@@ -47,19 +78,23 @@ int		main(void)
 			{
 				printf("%s ", rdir->d_name);
 				lstat(rdir->d_name, &file_info);
-				if ((file_info.st_mode & S_IFMT) == S_IFREG)
-					puts(" regular file");
-				else if ((file_info.st_mode & S_IFMT) == S_IFDIR)
-					puts(" directory");
-				else if ((file_info.st_mode & S_IFMT) == S_IFCHR)
-					puts(" character device");
-				else if ((file_info.st_mode & S_IFMT) == S_IFBLK)
-					puts(" block device");
-				else
-					puts(" unknown");
+				// if ((file_info.st_mode & S_IFMT) == S_IFREG)
+				// 	puts(" regular file");
+				// else if ((file_info.st_mode & S_IFMT) == S_IFDIR)
+				// 	puts(" directory");
+				// else if ((file_info.st_mode & S_IFMT) == S_IFCHR)
+				// 	puts(" character device");
+				// else if ((file_info.st_mode & S_IFMT) == S_IFBLK)
+				// 	puts(" block device");
+				// else
+				// 	puts(" unknown");
 			}
 		}
 	}
+
+	printf("\n");
+
+	printf("%-35s\t", "a.out");
 
 	closedir(dir);
 	return (0);
