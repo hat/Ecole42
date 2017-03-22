@@ -10,6 +10,7 @@ typedef struct	s_file
 typedef struct	s_all
 {
 	int				options;
+	char			*dir;
 	t_file			*file;
 }				t_all;
 

@@ -33,6 +33,15 @@
 // };
 
 
+x == (x | Math.Pow(2, y));
+
+int x = 5;
+
+x == (x | Math.Pow(2, 0) //Bit 0 is ON;
+x == (x | Math.Pow(2, 1) //Bit 1 is OFF;
+x == (x | Math.Pow(2, 2) //Bit 2 is ON;
+
+
     if(argc != 2)    
         return 1;
 
@@ -70,6 +79,7 @@ int		main(void)
 	struct stat		file_info;
 
 	dir = opendir(".");
+	lst->dir = ft_strcpy(".");
 	if (dir != NULL)
 	{
 		while ((rdir = readdir(dir)) != NULL)
