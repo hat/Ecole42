@@ -2,11 +2,12 @@
 
 void	swap(t_file *a, t_file *b)
 {
-	t_file	*temp;
+	char	*temp;
 
-	temp = a;
-	a = b;
-	b = temp;
+	temp = ft_strdup(a->name);
+	a->name = ft_strdup(b->name);
+	b->name = ft_strdup(temp);
+	ft_strdel(&temp);
 }
 
 void	bubblesort(t_file *head)
@@ -16,6 +17,7 @@ void	bubblesort(t_file *head)
 	t_file	*two;
 
 	one = head;
+	two = NULL;
 	if (one == NULL)
 		return ;
 	swapped = 1;
@@ -23,11 +25,10 @@ void	bubblesort(t_file *head)
 	{
 		swapped = 0;
 		one = head;
-		while (one->next != two)
+		while (one->next->name)
 		{
 			if (ft_strcmp(one->name, one->next->name) > 0)
 			{
-				ft_printf("Swap 'em!\n");
 				swap(one, one->next);
 				swapped = 1;
 			}
