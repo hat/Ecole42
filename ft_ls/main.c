@@ -19,16 +19,23 @@ int		check_bit(const int num, int byte)
 //ERROR HERE WHEN CHANGING DIR TO PRINT
 //POSSIBLY BECAUSE NOT INCLUDING ../ ???
 
-void	print_dirs_long(char *file)
+void	print_dirs_long(t_all *lst, char *file)
 {
+	char			*path;
 	struct stat		fileStat;
 	struct passwd	*pw;
 	struct group	*gr;
 	char			*date;
 
+	path = ft_strnew(ft_strlen(lst->dir) + 1);
+
+	path = ft_strjoin(lst->dir, "/");
+
+	path = ft_strjoin(path, file);
+
 	//ERROR EXISTS HERE!!!
-    // if(stat(file, &fileStat) < 0)    
-    //     return ;
+    if(lstat(path, &fileStat) < 0)
+        return ;
 
     date = ft_strnew(10);
 
@@ -85,7 +92,7 @@ void	print_dirs_reverse(t_all *lst, t_file *file)
 	if (file->name)
 	{
 		if (check_bit(lst->options, 2))
-			print_dirs_long(file->name);
+			print_dirs_long(lst, file->name);
 		else
 			ft_printf("%s\n", file->name);
 	}
@@ -96,7 +103,7 @@ void	print_dirs(t_all *lst)
 	while (lst->file->next)
 	{
 		if ( check_bit(lst->options, 2) )
-			print_dirs_long(lst->file->name);
+			print_dirs_long(lst, lst->file->name);
 		else
 			ft_printf("%s\n", lst->file->name);
 		lst->file = lst->file->next;
@@ -126,6 +133,7 @@ void	get_dirs(t_all *lst)
 	{
 		while ((rdir = readdir(dir)) != NULL)
 		{
+			head->name = ft_strnew(ft_strlen(lst->dir) + ft_strlen(rdir->d_name) + 1);
 			if ( !(check_bit(lst->options, 1)) ) //change to bitwise
 			{
 				if (*rdir->d_name != '.')
@@ -193,7 +201,7 @@ int		main(int argc, char *argv[])
 
 	lst = (t_all *)ft_memalloc(sizeof(t_all));
 	lst->dir = ft_memalloc(sizeof(char) * 1);
-	lst->dir = ft_strdup(".");
+	lst->dir = ft_strdup("./");
 	if (argc > 1)
 		get_options(lst, argc, argv);
 	get_dirs(lst);
