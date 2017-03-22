@@ -98,35 +98,37 @@ void	print_dirs_reverse(t_all *lst, t_file *file)
 	}
 }
 
-void	print_dirs(t_all *lst)
+void	print_dirs(t_all *lst, t_file *file)
 {
-	while (lst->file->next)
+	while (file->next)
 	{
 		if ( check_bit(lst->options, 2) )
-			print_dirs_long(lst, lst->file->name);
+			print_dirs_long(lst, file->name);
 		else
-			ft_printf("%s\n", lst->file->name);
-		lst->file = lst->file->next;
+			ft_printf("%s\n", file->name);
+		file = file->next;
 	}
 }
 
-void	check_print_dirs(t_all *lst)
+void	check_print_dirs(t_all *lst, t_file *file)
 {
 	if ( check_bit(lst->options, 4) )
-		print_dirs_reverse(lst, lst->file);
+		print_dirs_reverse(lst, file);
+	// else if ( check_bit(lst->options, 3) )
+	// 	print_dirs_recursively(lst);
 	else
-		print_dirs(lst);
+		print_dirs(lst, file);
 }
 
-void	get_dirs(t_all *lst)
+t_file	*get_dirs(t_all *lst)
 {
 	void			*dir;
 	struct dirent	*rdir;
-
 	t_file			*head;
+	t_file			*file;
 
-	lst->file = (t_file *)ft_memalloc(sizeof(t_file));
-	head = lst->file;
+	head = (t_file *)ft_memalloc(sizeof(t_file));
+	file = head;
 
 	dir = opendir(lst->dir);
 	if (dir != NULL)
@@ -154,6 +156,7 @@ void	get_dirs(t_all *lst)
 	}
 	else
 		ft_printf("ls: %s: No such file or directory\n", lst->dir);
+	return (file);
 }
 
 void	get_options(t_all *lst, int argc, char *argv[])
@@ -198,12 +201,14 @@ void	get_options(t_all *lst, int argc, char *argv[])
 int		main(int argc, char *argv[])
 {
 	t_all	*lst;
+	t_file	*file;
 
 	lst = (t_all *)ft_memalloc(sizeof(t_all));
 	lst->dir = ft_memalloc(sizeof(char) * 1);
 	lst->dir = ft_strdup("./");
 	if (argc > 1)
 		get_options(lst, argc, argv);
-	get_dirs(lst);
-	check_print_dirs(lst);
+	file = get_dirs(lst);
+	bubblesort(file);
+	check_print_dirs(lst, file);
 }
