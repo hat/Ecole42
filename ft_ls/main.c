@@ -1,3 +1,5 @@
+//SEG FAULTS WITH /home/
+
 #include <stdlib.h>
 #include <dirent.h>
 #include <sys/stat.h>
@@ -11,6 +13,23 @@
 
 #include <math.h> // Add to libft
 
+char	*ft_substr(char *str, int pos, int len)
+{
+	char	*new_str;
+	int		i;
+
+	new_str = ft_strnew(len);
+	i = 0;
+	if (new_str == NULL)
+		exit(1);
+	while (i < len && str[i])
+	{
+		new_str[i] = str[i + pos];
+		i++;
+	}
+	return (new_str);
+}
+
 int		check_bit(const int num, int byte)
 {
 	return ((num) & (1<<(byte)));
@@ -19,7 +38,7 @@ int		check_bit(const int num, int byte)
 //ERROR HERE WHEN CHANGING DIR TO PRINT
 //POSSIBLY BECAUSE NOT INCLUDING ../ ???
 
-void	print_dirs_long(t_all *lst, char *file)
+void	print_dirs_long(t_all *lst, char *file, int i)
 {
 	char			*path;
 	struct stat		fileStat;
@@ -27,20 +46,13 @@ void	print_dirs_long(t_all *lst, char *file)
 	struct group	*gr;
 	char			*date;
 
-	path = ft_strnew(ft_strlen(lst->dirv[0]) + 1);
-
-	path = ft_strjoin(lst->dirv[0], "/");
-
+	path = ft_strnew(ft_strlen(lst->dirv[i]) + 1);
+	path = ft_strjoin(lst->dirv[i], "/");
 	path = ft_strjoin(path, file);
-
-	//ERROR EXISTS HERE!!!
     if(lstat(path, &fileStat) < 0)
         return ;
-
     date = ft_strnew(10);
-
     //FILE PERMISSIONS
-
     ft_printf( (S_ISDIR(fileStat.st_mode)) ? "d" : "-"); // can possibly be 'l'
     ft_printf( (fileStat.st_mode & S_IRUSR) ? "r" : "-");
     ft_printf( (fileStat.st_mode & S_IWUSR) ? "w" : "-");
@@ -51,54 +63,40 @@ void	print_dirs_long(t_all *lst, char *file)
     ft_printf( (fileStat.st_mode & S_IROTH) ? "r" : "-");
     ft_printf( (fileStat.st_mode & S_IWOTH) ? "w" : "-");
     ft_printf( (fileStat.st_mode & S_IXOTH) ? "x" : "-");
-
     //NUMBER OF LINKS
-
     ft_printf(" %d", fileStat.st_nlink);
-
     //USER ID
-
     pw = getpwuid(fileStat.st_uid);
-
     ft_printf(" %s", pw->pw_name);
-
     //USER GROUP
-
     gr = getgrgid(fileStat.st_gid);
-
     ft_printf("  %s", gr->gr_name);
-
     //FILE SIZE
-
     ft_printf(" %6d",fileStat.st_size);
-
     //FILE DATE/TIME
-
     strftime(date, 20, " %b %d %R", localtime(&(fileStat.st_ctime)));
     ft_printf("%s", date);
-
     //FILE NAME
-
     ft_printf(" %s\n", file);
-
     ft_strdel(&date);
 }
 
 void	print_dirs_reverse(t_all *lst, t_file *file, int i)
 {
-	ft_putstr("Seg\n");
 	if (!file)
 		return ;
+	if (lst->dirc > 1 && i != -1)
+	{
+		ft_printf("%s:\n", lst->dirv[i]);
+		i = -1;
+	}
 	print_dirs_reverse(lst, file->next, i);
-	//if (lst->dirc > 1)
-		//ft_printf("%s:\n", lst->dirv[i]);
 	if (file->name)
 	{
 		if (check_bit(lst->options, 2))
-			print_dirs_long(lst, file->name);
+			print_dirs_long(lst, file->name, i);
 		else
 			ft_printf("%s\n", file->name);
-		//file = file->next;
 	}
 }
 
@@ -109,7 +107,7 @@ void	print_dirs(t_all *lst, t_file *file, int i)
 	while (file->next)
 	{
 		if ( check_bit(lst->options, 2) )
-			print_dirs_long(lst, file->name);
+			print_dirs_long(lst, file->name, i);
 		else
 			ft_printf("%s\n", file->name);
 		file = file->next;
@@ -161,29 +159,46 @@ t_file	*get_all(t_all *lst, int i)
 		}
 	}
 	else
-	{
 		file = NULL;
-		ft_printf("ls: %s: No such file or directory\n", lst->dirv[0]);
-	}
 	return (file);
 }
 
 void	get_dir(t_all *lst, int argc, char *argv[])
 {
 	int		i;
+	char	dash;
 	char	dbl_dash;
+	char	*path;
+	struct stat		fileStat;
 
 	i = 1;
+	dash = 0;
 	dbl_dash = 0;
 	while (i < argc)
 	{
-		if (*argv[i] == '-' && *argv[i + 1] == '-')
+		path = ft_strnew(ft_strlen(argv[i]) + 1);
+		path = ft_strdup(argv[i]);
+		if (ft_strcmp(ft_substr(argv[i], 0, 2), "--") == 0)
+		{
+			if (ft_strlen(argv[i]) > 2)
+			{
+				ft_putstr("ls: illegal option -- -\nusage: ft_ls"
+					" [-ABCFGHLOPRSTUWabcdefghiklmnopqrstuwx1] [file ...]\n");
+				exit(1);
+			}
 			dbl_dash = 0;
-		if (*argv[i] != '-' || dbl_dash)
-			lst->dirv[i - 1] = ft_strdup(argv[i]);
+		}
+		else if (((*argv[i] != '-' || dbl_dash) && opendir(argv[i])) || !lstat(path, &fileStat))
+		{
+			lst->dirv[lst->dirc - 1] = ft_strdup(argv[i]);
+			if (i > 0)
+				lst->dirc++;
+		}
+		else if (!opendir(argv[i]) && lstat(path, &fileStat))
+			ft_printf("ls: %s: No such file or directory\n", argv[i]);
+		ft_strdel(&path);
 		i++;
 	}
-	lst->dirc = ((i - 1) == 0) ? 1 : (i - 1);
 }
 
 void	get_options(t_all *lst, int argc, char *argv[])
@@ -199,7 +214,7 @@ void	get_options(t_all *lst, int argc, char *argv[])
 			j = 1;
 			if (argv[i][j + 1] == '-')
 				break ;
-			while (j < (int)ft_strlen(argv[i]))
+			while (*argv[i] == '-' && j < (int)ft_strlen(argv[i]))
 			{
 				if (argv[i][j] == 'a')
 					lst->options += (0x1 << 1);
@@ -231,7 +246,6 @@ int		main(int argc, char *argv[])
 	lst->dirv[0] = ft_strdup("./");
 	lst->dirc = 1;
 	cur_dir = 0;
-		ft_putstr("Gto opts\n");
 	get_dir(lst, argc, argv);
 	if (argc > 1)
 		get_options(lst, argc, argv);
@@ -243,6 +257,8 @@ int		main(int argc, char *argv[])
 			bubblesort(file);
 			check_print_dirs(lst, file, cur_dir);
 		}
+		else if (0)
+			cur_dir += 0; // open and print file NOT THIS SHIT
 		if (lst->dirc > 1 && cur_dir + 1 != lst->dirc)
 			ft_printf("\n");
 		cur_dir++;
