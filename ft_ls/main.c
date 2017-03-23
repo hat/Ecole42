@@ -27,9 +27,9 @@ void	print_dirs_long(t_all *lst, char *file)
 	struct group	*gr;
 	char			*date;
 
-	path = ft_strnew(ft_strlen(lst->dir) + 1);
+	path = ft_strnew(ft_strlen(lst->dirv[0]) + 1);
 
-	path = ft_strjoin(lst->dir, "/");
+	path = ft_strjoin(lst->dirv[0], "/");
 
 	path = ft_strjoin(path, file);
 
@@ -41,7 +41,7 @@ void	print_dirs_long(t_all *lst, char *file)
 
     //FILE PERMISSIONS
 
-    ft_printf( (S_ISDIR(fileStat.st_mode)) ? "d" : "-");
+    ft_printf( (S_ISDIR(fileStat.st_mode)) ? "d" : "-"); // can possibly be 'l'
     ft_printf( (fileStat.st_mode & S_IRUSR) ? "r" : "-");
     ft_printf( (fileStat.st_mode & S_IWUSR) ? "w" : "-");
     ft_printf( (fileStat.st_mode & S_IXUSR) ? "x" : "-");
@@ -84,22 +84,28 @@ void	print_dirs_long(t_all *lst, char *file)
     ft_strdel(&date);
 }
 
-void	print_dirs_reverse(t_all *lst, t_file *file)
+void	print_dirs_reverse(t_all *lst, t_file *file, int i)
 {
+	ft_putstr("Seg\n");
 	if (!file)
 		return ;
-	print_dirs_reverse(lst, file->next);
+	print_dirs_reverse(lst, file->next, i);
+	//if (lst->dirc > 1)
+		//ft_printf("%s:\n", lst->dirv[i]);
 	if (file->name)
 	{
 		if (check_bit(lst->options, 2))
 			print_dirs_long(lst, file->name);
 		else
 			ft_printf("%s\n", file->name);
+		//file = file->next;
 	}
 }
 
-void	print_dirs(t_all *lst, t_file *file)
+void	print_dirs(t_all *lst, t_file *file, int i)
 {
+	if (lst->dirc > 1)
+		ft_printf("%s:\n", lst->dirv[i]);
 	while (file->next)
 	{
 		if ( check_bit(lst->options, 2) )
@@ -110,17 +116,17 @@ void	print_dirs(t_all *lst, t_file *file)
 	}
 }
 
-void	check_print_dirs(t_all *lst, t_file *file)
+void	check_print_dirs(t_all *lst, t_file *file, int i)
 {
 	if ( check_bit(lst->options, 4) )
-		print_dirs_reverse(lst, file);
+		print_dirs_reverse(lst, file, i);
 	// else if ( check_bit(lst->options, 3) )
 	// 	print_dirs_recursively(lst);
 	else
-		print_dirs(lst, file);
+		print_dirs(lst, file, i);
 }
 
-t_file	*get_dirs(t_all *lst)
+t_file	*get_all(t_all *lst, int i)
 {
 	void			*dir;
 	struct dirent	*rdir;
@@ -130,12 +136,12 @@ t_file	*get_dirs(t_all *lst)
 	head = (t_file *)ft_memalloc(sizeof(t_file));
 	file = head;
 
-	dir = opendir(lst->dir);
+	dir = opendir(lst->dirv[i]);
 	if (dir != NULL)
 	{
 		while ((rdir = readdir(dir)) != NULL)
 		{
-			head->name = ft_strnew(ft_strlen(lst->dir) + ft_strlen(rdir->d_name) + 1);
+			head->name = ft_strnew(ft_strlen(lst->dirv[i]) + ft_strlen(rdir->d_name) + 1);
 			if ( !(check_bit(lst->options, 1)) ) //change to bitwise
 			{
 				if (*rdir->d_name != '.')
@@ -155,8 +161,29 @@ t_file	*get_dirs(t_all *lst)
 		}
 	}
 	else
-		ft_printf("ls: %s: No such file or directory\n", lst->dir);
+	{
+		file = NULL;
+		ft_printf("ls: %s: No such file or directory\n", lst->dirv[0]);
+	}
 	return (file);
+}
+
+void	get_dir(t_all *lst, int argc, char *argv[])
+{
+	int		i;
+	char	dbl_dash;
+
+	i = 1;
+	dbl_dash = 0;
+	while (i < argc)
+	{
+		if (*argv[i] == '-' && *argv[i + 1] == '-')
+			dbl_dash = 0;
+		if (*argv[i] != '-' || dbl_dash)
+			lst->dirv[i - 1] = ft_strdup(argv[i]);
+		i++;
+	}
+	lst->dirc = ((i - 1) == 0) ? 1 : (i - 1);
 }
 
 void	get_options(t_all *lst, int argc, char *argv[])
@@ -184,13 +211,8 @@ void	get_options(t_all *lst, int argc, char *argv[])
 					lst->options += (0x1 << 4);
 				else if (argv[i][j] == 't')
 					lst->options += (0x1 << 5);
-				else
-				{
-					ft_strdel(&lst->dir);
-					lst->dir = ft_memalloc(sizeof(char) * ft_strlen(argv[i]));
-					lst->dir = ft_strdup(argv[i]);
-					break ;
-				}
+				else if (argv[i][j] == 't')
+					lst->options += (0x1 << 5);
 				j++;
 			}
 		}
@@ -202,13 +224,27 @@ int		main(int argc, char *argv[])
 {
 	t_all	*lst;
 	t_file	*file;
+	int		cur_dir;
 
 	lst = (t_all *)ft_memalloc(sizeof(t_all));
-	lst->dir = ft_memalloc(sizeof(char) * 1);
-	lst->dir = ft_strdup("./");
+	lst->dirv = (char **)ft_memalloc(sizeof(char *) * argc);
+	lst->dirv[0] = ft_strdup("./");
+	lst->dirc = 1;
+	cur_dir = 0;
+		ft_putstr("Gto opts\n");
+	get_dir(lst, argc, argv);
 	if (argc > 1)
 		get_options(lst, argc, argv);
-	file = get_dirs(lst);
-	bubblesort(file);
-	check_print_dirs(lst, file);
+	while (cur_dir < lst->dirc)
+	{
+		file = get_all(lst, cur_dir);
+		if (file)
+		{
+			bubblesort(file);
+			check_print_dirs(lst, file, cur_dir);
+		}
+		if (lst->dirc > 1 && cur_dir + 1 != lst->dirc)
+			ft_printf("\n");
+		cur_dir++;
+	}
 }

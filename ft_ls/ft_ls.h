@@ -13,8 +13,9 @@ typedef struct	s_file
 typedef struct	s_all
 {
 	int				options;
-	char			*dir;
-	//t_file			*file;
+	//char			*dir;
+	int				dirc;
+	char			**dirv;
 }				t_all;
 
 void	bubblesort(t_file *head);
