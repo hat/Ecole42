@@ -19,5 +19,6 @@ typedef struct	s_all
 }				t_all;
 
 void	bubblesort(t_file *head);
+void	bubblesort_dirs(t_all *lst);
 
 #endif

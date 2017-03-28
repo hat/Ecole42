@@ -1,5 +1,3 @@
-//SEG FAULTS WITH /home/
-
 #include <stdlib.h>
 #include <dirent.h>
 #include <sys/stat.h>
@@ -12,8 +10,6 @@
 #include <libft.h>
 
 #include <math.h> // Add to libft
-
-//ADD THE 
 
 char	*ft_substr(char *str, int pos, int len)
 {
@@ -36,9 +32,6 @@ int		check_bit(const int num, int byte)
 {
 	return ((num) & (1<<(byte)));
 }
-
-//ERROR HERE WHEN CHANGING DIR TO PRINT
-//POSSIBLY BECAUSE NOT INCLUDING ../ ???
 
 void	print_dirs_long(t_all *lst, char *file, int i)
 {
@@ -205,11 +198,7 @@ void	get_dir(t_all *lst, int argc, char *argv[])
 		ft_strdel(&path);
 		i++;
 	}
-<<<<<<< HEAD
 	lst->dirc = (lst->dirc == 1) ? 1 : lst->dirc - 1;
-=======
-	lst->dirc = (lst->dirc == 2) ? 1 : lst->dirc - 1;
->>>>>>> eae53aca465dd710db7daa70f59c533cbbb029f5
 }
 
 void	get_options(t_all *lst, int argc, char *argv[])
@@ -256,9 +245,9 @@ int		main(int argc, char *argv[])
 	lst->dirc = 1;
 	cur_dir = 0;
 	get_dir(lst, argc, argv);
+	bubblesort_dirs(lst);
 	if (argc > 1)
 		get_options(lst, argc, argv);
-	ft_printf("Dir count: %d\n", lst->dirc);
 	while (cur_dir < lst->dirc)
 	{
 		file = get_all(lst, cur_dir);

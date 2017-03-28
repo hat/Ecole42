@@ -37,3 +37,35 @@ void	bubblesort(t_file *head)
 		two = one;
 	}
 }
+
+void	swap_dirs(t_all *lst, int i)
+{
+	char	*temp;
+
+	temp = ft_strdup(lst->dirv[i]);
+	lst->dirv[i] = ft_strdup(lst->dirv[i + 1]);
+	lst->dirv[i + 1] = ft_strdup(temp);
+	ft_strdel(&temp);
+}
+
+void	bubblesort_dirs(t_all *lst)
+{
+	int		i;
+	int		swapped;
+
+	swapped = 1;
+	while (swapped)
+	{
+		swapped = 0;
+		i = 0;
+		while (i < lst->dirc - 1)
+		{
+			if (ft_strcmp(lst->dirv[i], lst->dirv[i + 1]) > 0)
+			{
+				swap_dirs(lst, i);
+				swapped = 1;
+			}
+			i++;
+		}
+	}
+}
