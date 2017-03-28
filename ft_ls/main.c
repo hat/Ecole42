@@ -188,17 +188,17 @@ void	get_dir(t_all *lst, int argc, char *argv[])
 			}
 			dbl_dash = 0;
 		}
-		else if (((*argv[i] != '-' || dbl_dash) && opendir(argv[i])) || !lstat(path, &fileStat))
+		else if ((*argv[i] != '-' && !dbl_dash && opendir(argv[i])) || !lstat(path, &fileStat))
 		{
 			lst->dirv[lst->dirc - 1] = ft_strdup(argv[i]);
-			if (i > 0)
-				lst->dirc++;
+			lst->dirc++;
 		}
-		else if (!opendir(argv[i]) && lstat(path, &fileStat))
+		else if (!opendir(argv[i]) && lstat(path, &fileStat) && (*argv[i] != '-' && !dbl_dash))
 			ft_printf("ls: %s: No such file or directory\n", argv[i]);
 		ft_strdel(&path);
 		i++;
 	}
+	lst->dirc = (lst->dirc == 2) ? 1 : lst->dirc - 1;
 }
 
 void	get_options(t_all *lst, int argc, char *argv[])
@@ -226,8 +226,6 @@ void	get_options(t_all *lst, int argc, char *argv[])
 					lst->options += (0x1 << 4);
 				else if (argv[i][j] == 't')
 					lst->options += (0x1 << 5);
-				else if (argv[i][j] == 't')
-					lst->options += (0x1 << 5);
 				j++;
 			}
 		}
@@ -249,6 +247,7 @@ int		main(int argc, char *argv[])
 	get_dir(lst, argc, argv);
 	if (argc > 1)
 		get_options(lst, argc, argv);
+	ft_printf("Dir count: %d\n", lst->dirc);
 	while (cur_dir < lst->dirc)
 	{
 		file = get_all(lst, cur_dir);
