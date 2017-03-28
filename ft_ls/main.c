@@ -205,7 +205,11 @@ void	get_dir(t_all *lst, int argc, char *argv[])
 		ft_strdel(&path);
 		i++;
 	}
+<<<<<<< HEAD
 	lst->dirc = (lst->dirc == 1) ? 1 : lst->dirc - 1;
+=======
+	lst->dirc = (lst->dirc == 2) ? 1 : lst->dirc - 1;
+>>>>>>> eae53aca465dd710db7daa70f59c533cbbb029f5
 }
 
 void	get_options(t_all *lst, int argc, char *argv[])
@@ -254,6 +258,7 @@ int		main(int argc, char *argv[])
 	get_dir(lst, argc, argv);
 	if (argc > 1)
 		get_options(lst, argc, argv);
+	ft_printf("Dir count: %d\n", lst->dirc);
 	while (cur_dir < lst->dirc)
 	{
 		file = get_all(lst, cur_dir);
