@@ -1,5 +1,7 @@
 #include <ft_ls.h>
 
+// CHANGE SORT TO PUT ISFILE FIRST THEN ABC ORDER
+
 void	swap(t_file *a, t_file *b)
 {
 	char	*temp;
