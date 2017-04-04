@@ -18,6 +18,8 @@ char	*ft_substr(char *str, int pos, int len)
 	return (new_str);
 }
 
+//WTF IS THIS DOING?!??!?!?!?!
+
 t_file	*get_all(t_all *lst, int i)
 {
 	void			*dir;
