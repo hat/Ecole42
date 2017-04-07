@@ -44,7 +44,7 @@ t_file	*get_all(t_all *lst, int i)
 		while ((rdir = readdir(dir)) != NULL)
 		{
 			head->name = ft_strnew(ft_strlen(lst->dirv[i]) + ft_strlen(rdir->d_name) + 1);
-			if ( !(check_bit(lst->options, 1)) ) //change to bitwise
+			if ( !(check_bit(lst->flags, 1)) ) //change to bitwise
 			{
 				if (*rdir->d_name != '.')
 				{
@@ -99,6 +99,12 @@ void	get_dir(t_all *lst, int argc, char *argv[])
 		}
 		else if (!opendir(argv[i]) && lstat(lst->path[i], &fileStat) && lst->dash)
 			ft_printf("ls: %s: No such file or directory\n", argv[i]);
+		else
+		{
+			ft_printf("ls: %s: No such file or directory\n", argv[i]);
+			lst->dirv = NULL;
+			lst->dirc = 0;
+		}
 	}
 	lst->dirc = (lst->dirc == 1) ? 1 : lst->dirc - 1;
 }

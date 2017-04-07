@@ -60,11 +60,14 @@ int		main(int argc, char *argv[])
 	lst->dirv[0] = ft_strdup("./");
 	lst->dirc = 1;
 	get_dir(lst, argc, argv);
-	bubblesort_dirs(lst);
-	if (argc > 1)
-		get_options(lst, argc, argv);
-	file = get_all(lst, 0);
-	if (ls_files(lst, file) < lst->dirc)
-		ft_printf("\n");
-	ls_dirs(lst, file);
+	if (lst->dirv)
+	{
+		bubblesort_dirs(lst);
+		if (argc > 1)
+			get_options(lst, argc, argv);
+		file = get_all(lst, 0);
+		if (ls_files(lst, file) < lst->dirc)
+			ft_printf("\n");
+		ls_dirs(lst, file);
+	}
 }

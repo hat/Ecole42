@@ -69,7 +69,7 @@ void	print_dirs_reverse(t_all *lst, t_file *file, int i, int nl)
 	print_dirs_reverse(lst, file->next, i, nl);
 	if (file->name)
 	{
-		if (check_bit(lst->options, 2))
+		if (check_bit(lst->flags, 2))
 			print_dirs_long(lst, file, i);
 		else
 			ft_printf("%s\n", file->name);
@@ -82,7 +82,7 @@ void	print_dirs(t_all *lst, t_file *file, int i)
 		ft_printf("%s:\n", lst->dirv[i]);
 	while (file->next)
 	{
-		if ( check_bit(lst->options, 2) )
+		if ( check_bit(lst->flags, 2) )
 			print_dirs_long(lst, file, i);
 		else
 			ft_printf("%s\n", file->name);
@@ -92,9 +92,9 @@ void	print_dirs(t_all *lst, t_file *file, int i)
 
 void	check_print_dirs(t_all *lst, t_file *file, int i)
 {
-	if ( check_bit(lst->options, 4) )
+	if ( check_bit(lst->flags, 4) )
 		print_dirs_reverse(lst, file, i, 1);
-	// else if ( check_bit(lst->options, 3) )
+	// else if ( check_bit(lst->flags, 3) )
 	// 	print_dirs_recursively(lst);
 	else
 		print_dirs(lst, file, i);

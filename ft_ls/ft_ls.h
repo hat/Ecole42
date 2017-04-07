@@ -20,7 +20,7 @@ typedef struct	s_file
 
 typedef struct	s_all
 {
-	int				options;
+	int				flags;
 	int				dash;
 	//char			*dir;
 	int				dirc;
