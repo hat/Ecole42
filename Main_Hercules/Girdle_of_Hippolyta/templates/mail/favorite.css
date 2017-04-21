@@ -1,0 +1,23 @@
+body {
+background-image: url("https://static.vecteezy.com/system/resources/previews/000/139/204/original/hercules-statue-vector.jpg");
+background-position: cover;
+background-repeat: none;
+}
+.intro, .subject {
+text-align: center;
+vertical-align: middle;
+}
+.intro {
+font-size: 23px;
+color: #B20000;
+}
+.subject {
+font-size: 16px;
+color: #B20000;
+}
+.girdle {
+display: block;
+margin: 0 auto;
+height: 200px;
+width: 200px;
+}
